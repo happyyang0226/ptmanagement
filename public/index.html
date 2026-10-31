@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIDX 주간 결과물 · 피드백</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#f3f6f9;--card:#fff;--ink:#1c2b3a;--sub:#5d7084;--mute:#8d9cab;--line:#e2e9f0;--line2:#eef2f6;
+  --brand:#0f5c8c;--brand2:#e7f1f8;--accent:#1f7ae0;
+  --ok:#1e8a5b;--okbg:#e6f5ee;--warn:#c76a00;--warnbg:#fff2e0;--new:#7a3fd1;--newbg:#f2eafd;
+  --info:#1f6feb;--infobg:#e8f0fe;--bad:#c0392b;--badbg:#fdecea;--gray:#7a8794;--graybg:#eef1f4;
+  --r:14px;--shadow:0 1px 2px #0f2b4510,0 6px 20px #0f2b450d;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--accent)}
+.hidden{display:none!important}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+
+/* top bar */
+.top{background:var(--brand);color:#fff;position:sticky;top:0;z-index:50}
+.top .wrap{display:flex;align-items:center;gap:14px;min-height:58px;flex-wrap:wrap;padding-top:6px;padding-bottom:6px}
+.brand{font-weight:800;font-size:17px;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
+.brand .dot{width:26px;height:26px;border-radius:8px;background:#ffffff26;display:grid;place-items:center;font-size:14px}
+.top .grow{flex:1}
+.who{font-size:13px;opacity:.92;white-space:nowrap}
+.btn-top{border:1px solid #ffffff55;background:#ffffff14;color:#fff;border-radius:9px;padding:6px 12px;font-size:13px;font-weight:700}
+.btn-top:hover{background:#ffffff2a}
+
+/* generic */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.pad{padding:18px 20px}
+h2{font-size:18px;margin:0 0 4px;letter-spacing:-.3px}
+h3{font-size:15px;margin:0 0 8px}
+.muted{color:var(--mute)}
+.sub{color:var(--sub)}
+.small{font-size:13px}
+.tiny{font-size:12px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 14px;font-weight:700;font-size:14px}
+.btn:hover{border-color:#c5d3e0;background:#f8fbfd}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#1868c4}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--bad)}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:8px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+label.f{display:block;font-size:13px;font-weight:700;color:var(--sub);margin:0 0 12px}
+.in,select.in,textarea.in{display:block;width:100%;margin-top:5px;color:var(--ink);font-weight:400;border:1px solid #cfdae5;border-radius:10px;padding:10px 12px;background:#fbfdfe;font-size:15px}
+.in:focus,textarea.in:focus,select.in:focus{outline:2px solid #1f7ae033;border-color:var(--accent);background:#fff}
+textarea.in{resize:vertical;min-height:90px;line-height:1.6}
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:800;white-space:nowrap}
+.c-none{background:var(--graybg);color:var(--gray)}
+.c-sub{background:var(--infobg);color:var(--info)}
+.c-ok{background:var(--okbg);color:var(--ok)}
+.c-warn{background:var(--warnbg);color:var(--warn)}
+.c-new{background:var(--newbg);color:var(--new)}
+.c-bad{background:var(--badbg);color:var(--bad)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#16324bf2;color:#fff;padding:11px 18px;border-radius:12px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:200;max-width:92vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.toast.err{background:#a2281ef2}
+.empty{padding:28px;text-align:center;color:var(--mute)}
+
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(1200px 600px at 10% -10%,#2a7fb8 0,transparent 60%),linear-gradient(160deg,#0b3a5a,#0f5c8c 60%,#1b74ad)}
+.login-card{width:min(420px,100%);background:#fff;border-radius:20px;padding:28px 26px 22px;box-shadow:0 30px 70px #0007}
+.login-card h1{font-size:21px;margin:0 0 2px;letter-spacing:-.4px}
+.login-card .lead{color:var(--sub);font-size:13.5px;margin:0 0 18px}
+.tabs{display:flex;background:var(--graybg);border-radius:11px;padding:4px;margin-bottom:18px}
+.tabs button{flex:1;border:0;background:transparent;border-radius:8px;padding:8px 4px;font-weight:800;color:var(--sub);font-size:14px}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px #0002}
+.login-card .btn.primary{width:100%;padding:12px;font-size:15.5px;margin-top:4px}
+.login-err{min-height:20px;color:var(--bad);font-size:13px;font-weight:700;margin-top:10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.signup-note{background:var(--infobg);color:#244a7a;border-radius:10px;padding:9px 12px;font-size:12.5px;line-height:1.55;margin-bottom:14px}
+.signup-note.closed{background:var(--warnbg);color:var(--warn)}
+.joinbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--infobg);border:1px solid #cfe0fb;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13.5px}
+.joinbar .jc{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:18px;font-weight:800;letter-spacing:2px;color:var(--brand)}
+.login-foot{font-size:12px;color:var(--mute);margin-top:6px}
+.setup{max-width:560px;margin:60px auto;padding:24px}
+
+/* student */
+.s-head{margin:18px 0 14px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start}
+.team-title{font-size:22px;font-weight:800;letter-spacing:-.4px;margin:0}
+.members{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.member{background:var(--brand2);color:var(--brand);font-weight:700;font-size:12.5px;border-radius:999px;padding:3px 10px}
+.member.me{background:var(--brand);color:#fff}
+.disease{display:flex;gap:8px;align-items:end;min-width:300px}
+.disease label{flex:1;margin:0}
+.s-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start;margin-bottom:40px}
+.weeks{padding:8px;position:sticky;top:72px;max-height:calc(100vh - 90px);overflow:auto}
+.wk{display:grid;grid-template-columns:38px 1fr;gap:4px 10px;width:100%;text-align:left;border:0;background:transparent;border-radius:11px;padding:9px 10px;align-items:center}
+.wk:hover{background:#f3f7fb}
+.wk.on{background:var(--brand2)}
+.wk .n{grid-row:span 2;width:38px;height:38px;border-radius:10px;background:var(--graybg);display:grid;place-items:center;font-weight:800;color:var(--sub);font-size:14px}
+.wk.on .n{background:var(--brand);color:#fff}
+.wk .t{font-weight:700;font-size:13.5px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.wk .m{display:flex;gap:6px;align-items:center;font-size:11.5px;color:var(--mute)}
+.detail .hd{padding:20px 22px 14px;border-bottom:1px solid var(--line2)}
+.detail .hd .kick{font-size:12.5px;font-weight:800;color:var(--brand);letter-spacing:.3px}
+.detail .hd h2{font-size:20px;margin:2px 0 6px}
+.detail .body{padding:18px 22px 22px}
+.due{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:var(--sub)}
+.fbbox{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:12px;padding:14px 16px;margin-bottom:18px;background:#fbfefc}
+.fbbox.revise{border-left-color:var(--warn);background:#fffcf6}
+.fbbox .fbh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.fbbox .score{font-weight:800;font-size:15px}
+.fbtext{white-space:pre-wrap;word-break:break-word}
+.files{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.file{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:7px 10px;background:#fbfdfe;font-size:13.5px}
+.file .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.drop{display:block;cursor:pointer;border:1.5px dashed #c3d2e0;border-radius:12px;padding:14px;text-align:center;color:var(--sub);font-size:13.5px;margin-top:8px;background:#fafcfe}
+.drop.on{border-color:var(--accent);background:var(--infobg)}
+.savebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--line2)}
+.savebar .meta{flex:1;font-size:12.5px;color:var(--mute)}
+.lockmsg{background:var(--graybg);border-radius:10px;padding:10px 14px;font-size:13.5px;color:var(--sub);margin-bottom:14px}
+.linkview a{word-break:break-all}
+
+/* admin */
+.atabs{display:flex;gap:4px;margin:16px 0 14px;border-bottom:1px solid var(--line);overflow-x:auto}
+.atabs button{border:0;background:transparent;padding:10px 14px;font-weight:800;color:var(--sub);border-bottom:3px solid transparent;white-space:nowrap}
+.atabs button.on{color:var(--brand);border-bottom-color:var(--brand)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.stat{padding:14px 16px}
+.stat .k{font-size:12.5px;color:var(--sub);font-weight:700}
+.stat .v{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-top:2px}
+.stat .v small{font-size:13px;color:var(--mute);font-weight:700}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.seg{display:inline-flex;background:var(--graybg);border-radius:10px;padding:3px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font-weight:800;font-size:13px;color:var(--sub)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px #0002}
+.legend{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin-left:auto}
+.gridwrap{overflow:auto}
+table.grid{border-collapse:separate;border-spacing:0;width:100%;min-width:900px}
+table.grid th,table.grid td{border-bottom:1px solid var(--line2);padding:6px 4px;text-align:center;font-size:12.5px}
+table.grid th{position:sticky;top:0;background:#f7fafc;color:var(--sub);font-weight:800;z-index:2}
+table.grid th.tm,table.grid td.tm{text-align:left;position:sticky;left:0;background:#fff;z-index:1;padding-left:14px;min-width:190px;border-right:1px solid var(--line2)}
+table.grid th.tm{background:#f7fafc;z-index:3}
+table.grid th .wt{display:block;font-size:10.5px;font-weight:600;color:var(--mute);max-width:70px;margin:0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table.grid th.cur{color:var(--brand);background:#eaf3fa}
+.tmname{font-weight:800;font-size:13.5px}
+.tmdis{font-size:12px;color:var(--sub)}
+.tmmem{font-size:11.5px;color:var(--mute)}
+.cell{width:100%;min-width:52px;height:40px;border-radius:9px;border:1px solid transparent;font-weight:800;font-size:12px;display:grid;place-items:center;line-height:1.15;padding:0 2px}
+.cell small{display:block;font-size:10px;font-weight:700;opacity:.85}
+.cell.none{background:#f6f8fa;color:#b4bfca;border-color:#eef2f5}
+.cell.sub{background:var(--infobg);color:var(--info)}
+.cell.resub{background:var(--newbg);color:var(--new)}
+.cell.ok{background:var(--okbg);color:var(--ok)}
+.cell.revise{background:var(--warnbg);color:var(--warn)}
+.cell:hover{border-color:#8fb3d6}
+.cell{position:relative}
+.cell.late::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--bad);position:absolute;top:4px;right:4px}
+.drawer-bg{position:fixed;inset:0;background:#0d243866;z-index:90;display:none}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(720px,100%);background:#fff;z-index:100;box-shadow:-10px 0 40px #0003;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .2s}
+.drawer.on{transform:none}
+.drawer-bg.on{display:block}
+.drawer .dh{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:start}
+.drawer .dh .grow{flex:1}
+.drawer .db{flex:1;overflow:auto;padding:18px 20px}
+.drawer .df{border-top:1px solid var(--line);padding:14px 20px;background:#fafcfd}
+.subview{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fbfdfe;margin-bottom:14px}
+.subview .content{white-space:pre-wrap;word-break:break-word;margin-top:8px;font-size:14.5px}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+.quick button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;color:var(--sub)}
+.quick button:hover{border-color:var(--accent);color:var(--accent)}
+.radio{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-weight:700;font-size:13.5px;background:#fff;cursor:pointer}
+.radio:has(input:checked){border-color:var(--accent);background:var(--infobg)}
+.wkcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px}
+.wkcard{padding:14px 16px}
+.wkcard .row2{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.teamcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:12px}
+.teamcard{padding:16px}
+table.mem{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;table-layout:fixed}
+table.mem th{text-align:left;font-size:12px;color:var(--sub);padding:5px 6px;border-bottom:1px solid var(--line)}
+table.mem td{padding:5px 6px;border-bottom:1px solid var(--line2)}
+table.mem input{font-weight:400;color:var(--ink);border:1px solid transparent;background:transparent;border-radius:7px;padding:5px 7px;width:100%}
+table.mem input:hover{border-color:var(--line)}
+table.mem input:focus{border-color:var(--accent);background:#fff;outline:none}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700;letter-spacing:.5px;background:var(--graybg);border-radius:6px;padding:2px 7px}
+details.bulk{margin-top:10px}
+details.bulk summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--accent)}
+
+@media (max-width:900px){
+  .s-grid{grid-template-columns:1fr}
+  .weeks{position:static;max-height:none;display:flex;overflow-x:auto;gap:6px;padding:8px}
+  .wk{min-width:200px}
+  .s-head{grid-template-columns:1fr}
+  .disease{min-width:0}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .teamcards,.wkcards{grid-template-columns:1fr}
+  .teamcard .row{flex-wrap:wrap}
+}
+@media (max-width:560px){
+  .wrap{padding:0 14px}
+  .detail .hd,.detail .body{padding-left:16px;padding-right:16px}
+  .who{display:none}
+  .top .wrap{flex-wrap:nowrap;gap:8px}
+  .brand{font-size:15px}
+  .brand .dot{display:none}
+  .btn-top{padding:5px 9px;font-size:12px;white-space:nowrap}
+  .teamcards{grid-template-columns:1fr}
+}
+@media print{
+  .top,.atabs,.no-print{display:none!important}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<div id="setup" class="hidden">
+  <div class="setup card pad">
+    <h2>설정이 필요합니다</h2>
+    <p class="sub">이 웹앱을 쓰려면 <b>config.js</b> 파일에 Supabase의 <b>Project URL</b>과 <b>Publishable key</b>를 넣어야 합니다.</p>
+    <p class="small muted">GitHub 저장소에서 config.js를 열고 연필(✏️) 버튼으로 수정한 뒤 Commit changes를 누르면 1분 안에 반영됩니다.</p>
+  </div>
+</div>
+
+<div id="login" class="hidden">
+  <form class="login-card" id="loginForm" autocomplete="on" novalidate>
+    <h1>AIDX 주간 결과물</h1>
+    <p class="lead">물리치료과 1학년 · 근골격계 질환 팀 프로젝트</p>
+    <div class="tabs" role="tablist">
+      <button type="button" data-ltab="student" class="on">학생 로그인</button>
+      <button type="button" data-ltab="signup">처음 가입</button>
+      <button type="button" data-ltab="admin">교수</button>
+    </div>
+    <div id="lStudent">
+      <label class="f">조 이름<select class="in" id="lTeam"><option value="">불러오는 중…</option></select></label>
+      <label class="f">학번<input class="in" id="lSid" autocomplete="username" autocapitalize="off" spellcheck="false" inputmode="numeric"></label>
+    </div>
+    <div id="lSignup" class="hidden">
+      <div class="signup-note" id="suNote">조와 학번·이름을 입력하고, <b>앞으로 쓸 접속 코드</b>를 직접 정하세요. 수업 가입 코드는 교수님이 알려 줍니다.</div>
+      <label class="f">조 이름<select class="in" id="suTeam"><option value="">불러오는 중…</option></select></label>
+      <div class="two"><label class="f">학번<input class="in" id="suSid" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="numeric" maxlength="20"></label>
+      <label class="f">이름<input class="in" id="suName" autocomplete="off" maxlength="20"></label></div>
+      <div class="two"><label class="f">내 접속 코드 <span class="muted tiny">(4자 이상)</span><input class="in" id="suCode" type="password" autocomplete="new-password" maxlength="20"></label>
+      <label class="f">접속 코드 확인<input class="in" id="suCode2" type="password" autocomplete="new-password" maxlength="20"></label></div>
+      <label class="f">수업 가입 코드<input class="in" id="suJoin" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" placeholder="교수님이 알려 준 코드"></label>
+    </div>
+    <div id="lAdmin" class="hidden">
+      <label class="f">관리자 아이디<input class="in" id="lAid" autocomplete="username" autocapitalize="off" spellcheck="false"></label>
+    </div>
+    <label class="f" id="lCodeWrap">접속 코드<input class="in" id="lCode" type="password" autocomplete="current-password" autocapitalize="off"></label>
+    <button class="btn primary" id="lGo" type="submit">로그인</button>
+    <div class="login-err" id="lErr" aria-live="polite"></div>
+    <div class="login-foot">공용 컴퓨터에서는 사용 후 꼭 로그아웃하세요.</div>
+  </form>
+</div>
+
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="wrap">
+      <div class="brand"><span class="dot">✚</span><span id="brandText">AIDX 주간 결과물</span></div>
+      <div class="grow"></div>
+      <span class="who" id="whoText"></span>
+      <button class="btn-top hidden" id="myCodeBtn" type="button">코드 변경</button>
+      <button class="btn-top" id="refreshBtn" type="button">새로고침</button>
+      <button class="btn-top" id="logoutBtn" type="button">로그아웃</button>
+    </div>
+  </header>
+  <main class="wrap" id="main"></main>
+</div>
+
+<div class="drawer-bg" id="drawerBg"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ================= 기본 ================= */
+var CFG=window.AIDX_CONFIG||{};
+var BASE=String(CFG.url||'').trim().replace(/\/+$/,'');
+var KEY=String(CFG.key||'').trim();
+var TKEY='aidx_fb_token',LKEY='aidx_fb_last';
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(_){return null}}
+var tt;function toast(msg,err){var t=$('#toast');t.textContent=msg;t.className='toast on'+(err?' err':'');clearTimeout(tt);tt=setTimeout(function(){t.className='toast'},err?4200:2200)}
+function show(id){['setup','login','app'].forEach(function(x){$('#'+x).classList.toggle('hidden',x!==id)})}
+function dt(t,opt){if(!t)return '';var d=new Date(t);if(isNaN(d))return '';return d.toLocaleString('ko-KR',opt||{month:'numeric',day:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit'})}
+function toLocalInput(t){if(!t)return '';var d=new Date(t);if(isNaN(d))return '';var p=function(n){return String(n).padStart(2,'0')};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}
+function fromLocalInput(v){if(!v)return null;var d=new Date(v);return isNaN(d)?null:d.toISOString()}
+function dday(t){if(!t)return '';var ms=new Date(t)-new Date();var d=Math.ceil(ms/86400000);if(ms<0)return '마감';if(d<=0)return '오늘 마감';return 'D-'+d}
+function kb(n){n=+n||0;return n>=1048576?(n/1048576).toFixed(1)+'MB':Math.max(1,Math.round(n/1024))+'KB'}
+function linkify(s){return esc(s).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')}
+
+var ERR={auth:'로그인이 필요합니다.',locked:'코드를 10번 틀려 10분간 잠겼습니다. 잠시 후 다시 시도하세요.',locked_week:'이 주차는 마감(잠금)되어 수정할 수 없습니다.',
+ toolarge:'파일이 너무 큽니다(2MB 이하). 큰 파일은 구글 드라이브 등에 올리고 링크로 제출하세요.',toomany:'첨부는 주차마다 5개까지입니다.',
+ hassubs:'제출물이 있는 주차는 삭제할 수 없습니다. 잠금으로 닫아 주세요.',short:'새 코드는 8자 이상이어야 합니다.',oldcode:'현재 코드가 맞지 않습니다.',
+ noweek:'주차 정보가 없습니다.',noteam:'조 정보가 없습니다.',nosid:'학번을 입력하세요.',noname:'조 이름을 입력하세요.',nofile:'파일을 찾을 수 없습니다.',net:'인터넷 연결을 확인해 주세요.',
+ join_closed:'지금은 가입 기간이 아닙니다. 교수님께 문의하세요.',join_code:'수업 가입 코드가 맞지 않습니다.',bad_sid:'학번은 숫자·영문 4~20자로 입력하세요.',bad_name:'이름을 입력하세요.',
+ bad_code:'접속 코드는 4~20자로 정하세요.',exists:'이미 가입한 학번입니다. "학생 로그인"으로 들어가세요. 코드를 잊었으면 교수님께 문의하세요.',teamfull:'이 조는 인원이 다 찼습니다. 조를 다시 확인하세요.',
+ bad_join:'가입 코드는 영문·숫자 4~20자로 정하세요.',bad_max:'조당 인원은 1~10명입니다.'};
+function errMsg(e){return ERR[e&&e.code]||(e&&e.message)||'오류가 발생했습니다.'}
+
+function rpc(fn,args){
+  var h={'Content-Type':'application/json','apikey':KEY};
+  if(!/^sb_/.test(KEY))h.Authorization='Bearer '+KEY;
+  return fetch(BASE+'/rest/v1/rpc/'+fn,{method:'POST',headers:h,body:JSON.stringify(args||{})})
+   .then(function(res){
+     if(!res.ok)return res.text().then(function(t){var e=new Error(res.status===404?'서버 설정(SQL)이 아직 실행되지 않았습니다.':'서버 오류 ('+res.status+') '+(t||'').slice(0,150));e.code='http';throw e});
+     return res.json();
+   },function(){var e=new Error(ERR.net);e.code='net';throw e})
+   .then(function(j){if(j&&j.error){var e=new Error(j.error);e.code=j.error;throw e}return j});
+}
+var TOKEN=store(TKEY);
+function api(fn,args){
+  return rpc(fn,Object.assign({p_token:TOKEN},args||{})).catch(function(e){
+    if(e.code==='auth'){store(TKEY,null);TOKEN=null;openLogin('로그인이 만료되었습니다. 다시 로그인하세요.')}
+    throw e;
+  });
+}
+
+/* ================= 로그인 ================= */
+var ltab='student';
+function setLtab(t){ltab=t;$$('[data-ltab]').forEach(function(b){b.classList.toggle('on',b.dataset.ltab===t)});$('#lStudent').classList.toggle('hidden',t!=='student');$('#lSignup').classList.toggle('hidden',t!=='signup');$('#lAdmin').classList.toggle('hidden',t!=='admin');$('#lCodeWrap').classList.toggle('hidden',t==='signup');$('#lGo').textContent=t==='signup'?'가입하고 시작하기':'로그인';$('#lGo').disabled=t==='signup'&&PUB.join_open===false;$('#lErr').textContent=''}
+var PUB={};
+$$('[data-ltab]').forEach(function(b){b.onclick=function(){setLtab(b.dataset.ltab)}});
+function openLogin(msg){
+  show('login');closeDrawer();$('#lErr').textContent=msg||'';$('#lCode').value='';
+  var last={};try{last=JSON.parse(store(LKEY)||'{}')}catch(_){}
+  if(last.kind==='admin'){setLtab('admin');$('#lAid').value=last.id||''}else{setLtab('student');$('#lSid').value=last.sid||''}
+  Promise.all([rpc('fb_public_teams'),rpc('fb_public_config').catch(function(){return {join_open:false,max_members:4}})]).then(function(r){
+    var list=r[0];PUB=r[1]||{};
+    var groups={};list.forEach(function(t){(groups[t.class]=groups[t.class]||[]).push(t)});
+    var opts=function(signup){return '<option value="">조를 선택하세요</option>'+Object.keys(groups).sort().map(function(c){
+      return '<optgroup label="'+esc(c)+'반">'+groups[c].map(function(t){var full=signup&&t.count>=(PUB.max_members||4);
+        return '<option value="'+esc(t.id)+'"'+(full?' disabled':'')+'>'+esc(t.name)+(signup?' ('+t.count+'/'+(PUB.max_members||4)+'명'+(full?', 마감':'')+')':'')+'</option>'}).join('')+'</optgroup>'}).join('')};
+    $('#lTeam').innerHTML=opts(false);$('#suTeam').innerHTML=opts(true);
+    if(last.team)$('#lTeam').value=last.team;
+    var note=$('#suNote');
+    if(PUB.join_open===false){note.className='signup-note closed';note.innerHTML='지금은 가입 기간이 아닙니다. 이미 가입했다면 <b>학생 로그인</b>으로 들어가세요.'}
+    else{note.className='signup-note';note.innerHTML='조와 학번·이름을 입력하고, <b>앞으로 쓸 접속 코드</b>를 직접 정하세요. 수업 가입 코드는 교수님이 알려 줍니다.'}
+    setLtab(ltab);
+  }).catch(function(e){$('#lTeam').innerHTML=$('#suTeam').innerHTML='<option value="">조 목록을 불러오지 못했습니다</option>';$('#lErr').textContent=errMsg(e)});
+}
+$('#loginForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var code=$('#lCode').value.trim(),btn=$('#lGo'),p;
+  if(ltab==='signup'){
+    var st=$('#suTeam').value,ss=$('#suSid').value.trim(),sn=$('#suName').value.trim(),c1=$('#suCode').value.trim(),c2=$('#suCode2').value.trim(),jj=$('#suJoin').value.trim();
+    if(!st||!ss||!sn||!c1||!jj){$('#lErr').textContent='모든 칸을 입력하세요.';return}
+    if(c1!==c2){$('#lErr').textContent='접속 코드와 확인이 서로 다릅니다.';return}
+    if(c1.length<4){$('#lErr').textContent=ERR.bad_code;return}
+    var tname=($('#suTeam').selectedOptions[0]||{}).textContent||'';
+    if(!confirm(tname.replace(/\s*\(.*\)$/,'')+'\n학번 '+ss+' · '+sn+'\n\n이 정보로 가입할까요? (조를 잘못 고르면 교수님께 말씀하세요)'))return;
+    btn.disabled=true;$('#lErr').textContent='';
+    rpc('fb_signup',{p_team:st,p_sid:ss,p_name:sn,p_code:c1,p_join:jj}).then(function(r){
+      store(LKEY,JSON.stringify({kind:'student',team:st,sid:ss}));TOKEN=r.token;store(TKEY,TOKEN);
+      ['#suSid','#suName','#suCode','#suCode2','#suJoin'].forEach(function(x){$(x).value=''});
+      return boot().then(function(){toast('가입 완료! 다음부터는 "학생 로그인"에서 조·학번·내 접속 코드로 들어오세요.')});
+    }).catch(function(e){$('#lErr').textContent=errMsg(e)}).then(function(){btn.disabled=false;if(TOKEN)setLtab('student')});
+    return;
+  }
+  if(ltab==='student'){
+    var team=$('#lTeam').value,sid=$('#lSid').value.trim();
+    if(!team||!sid||!code){$('#lErr').textContent='조 이름, 학번, 접속 코드를 모두 입력하세요.';return}
+    p=rpc('fb_login_student',{p_team:team,p_sid:sid,p_code:code});store(LKEY,JSON.stringify({kind:'student',team:team,sid:sid}));
+  }else{
+    var id=$('#lAid').value.trim();
+    if(!id||!code){$('#lErr').textContent='아이디와 접속 코드를 입력하세요.';return}
+    p=rpc('fb_login_admin',{p_id:id,p_code:code});store(LKEY,JSON.stringify({kind:'admin',id:id}));
+  }
+  btn.disabled=true;$('#lErr').textContent='';
+  p.then(function(r){TOKEN=r.token;store(TKEY,TOKEN);return boot()})
+   .catch(function(e){$('#lErr').textContent=e.code==='auth'?(ltab==='student'?'조 이름, 학번 또는 접속 코드가 맞지 않습니다.':'아이디 또는 접속 코드가 맞지 않습니다.'):errMsg(e)})
+   .then(function(){btn.disabled=false});
+});
+$('#logoutBtn').onclick=function(){
+  if(dirty&&!confirm('저장하지 않은 내용이 있습니다. 그래도 로그아웃할까요?'))return;
+  var t=TOKEN;TOKEN=null;store(TKEY,null);dirty=false;
+  if(t)rpc('fb_logout',{p_token:t}).catch(function(){});
+  openLogin('로그아웃되었습니다.');
+};
+$('#myCodeBtn').onclick=function(){
+  var o=prompt('지금 쓰는 접속 코드를 입력하세요.');if(o==null)return;
+  var n=prompt('새 접속 코드를 입력하세요. (4~20자)');if(n==null)return;
+  var n2=prompt('새 접속 코드를 한 번 더 입력하세요.');if(n2==null)return;
+  if(n!==n2){toast('새 코드가 서로 다릅니다.',true);return}
+  api('fb_change_my_code',{p_old:o,p_new:n}).then(function(){toast('접속 코드를 바꿨습니다. 다음 로그인부터 새 코드를 쓰세요.')}).catch(function(e){toast(errMsg(e),true)});
+};
+$('#refreshBtn').onclick=function(){if(dirty&&!confirm('저장하지 않은 내용이 있습니다. 새로고침할까요?'))return;dirty=false;reload(true)};
+
+var ME=null;
+function boot(){
+  if(!TOKEN){openLogin();return Promise.resolve()}
+  return api('fb_me').then(function(me){
+    ME=me;show('app');
+    $('#myCodeBtn').classList.toggle('hidden',me.kind!=='student');
+    if(me.kind==='admin'){$('#brandText').textContent='AIDX 주간 결과물 · 교수';$('#whoText').textContent=me.name||me.admin_id;return loadAdmin()}
+    $('#brandText').textContent='AIDX 주간 결과물';$('#whoText').textContent=me.team.name+' · '+(me.name||me.student_id);
+    renderStudent();
+  }).catch(function(e){if(e.code!=='auth'){show('login');$('#lErr').textContent=errMsg(e)}});
+}
+function reload(msg){
+  if(!ME)return boot();
+  var p=ME.kind==='admin'?loadAdmin():api('fb_me').then(function(me){ME=me;renderStudent()});
+  return p.then(function(){if(msg)toast('최신 내용으로 새로고침했습니다.')}).catch(function(e){if(e.code!=='auth')toast(errMsg(e),true)});
+}
+
+/* ================= 학생 화면 ================= */
+var curWeek=null,dirty=false;
+window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
+function subOf(w){return (ME.submissions||[]).find(function(s){return s&&s.week===w})||null}
+function fbOf(w){return (ME.feedback||[]).find(function(f){return f.week===w})||null}
+function weekState(w,sub,fb){
+  if(fb){
+    if(!fb.read_at)return {cls:'c-new',txt:'새 피드백'};
+    if(fb.status==='revise')return (sub&&sub.updated_at&&new Date(sub.updated_at)>new Date(fb.updated_at))?{cls:'c-sub',txt:'보완 제출함'}:{cls:'c-warn',txt:'보완 요청'};
+    return {cls:'c-ok',txt:'피드백 완료'};
+  }
+  if(sub&&sub.submitted_at)return {cls:'c-sub',txt:'제출함'};
+  if(w.due_at&&new Date(w.due_at)<new Date())return {cls:'c-bad',txt:'미제출'};
+  return {cls:'c-none',txt:'미제출'};
+}
+function pickWeek(){
+  var ws=ME.weeks||[];if(!ws.length)return null;
+  var nf=ws.find(function(w){var f=fbOf(w.week);return f&&!f.read_at});if(nf)return nf.week;
+  var now=new Date(),up=ws.filter(function(w){return w.due_at&&new Date(w.due_at)>=now}).sort(function(a,b){return new Date(a.due_at)-new Date(b.due_at)})[0];
+  if(up)return up.week;
+  var un=ws.find(function(w){return !subOf(w.week)});return un?un.week:ws[ws.length-1].week;
+}
+function renderStudent(){
+  if(curWeek==null||!(ME.weeks||[]).some(function(w){return w.week===curWeek}))curWeek=pickWeek();
+  var t=ME.team;
+  var nNew=(ME.feedback||[]).filter(function(f){return !f.read_at}).length;
+  $('#main').innerHTML=
+   '<section class="s-head">'+
+     '<div><h1 class="team-title">'+esc(t.name)+' <span class="chip c-none" style="vertical-align:middle">'+esc(t.class)+'반</span>'+(nNew?' <span class="chip c-new" style="vertical-align:middle">새 피드백 '+nNew+'</span>':'')+'</h1>'+
+     '<div class="members">'+(ME.members||[]).map(function(m){return '<span class="member'+(m.student_id===ME.student_id?' me':'')+'">'+esc(m.name||m.student_id)+'</span>'}).join('')+'</div></div>'+
+     '<div class="disease card pad" style="padding:12px 14px"><label class="f">우리 조 근골격계 질환<input class="in" id="disIn" maxlength="100" placeholder="예: 유착성 관절주머니염(오십견)" value="'+esc(t.disease)+'"></label><button class="btn sm" id="disSave" type="button">저장</button></div>'+
+   '</section>'+
+   '<section class="s-grid">'+
+     '<nav class="weeks card" id="weekNav" aria-label="주차 목록">'+(ME.weeks||[]).map(function(w){
+        var st=weekState(w,subOf(w.week),fbOf(w.week));
+        return '<button class="wk'+(w.week===curWeek?' on':'')+'" data-week="'+w.week+'" type="button"><span class="n">'+w.week+'</span><span class="t">'+esc(w.title||(w.week+'주차'))+'</span><span class="m"><span class="chip '+st.cls+'">'+st.txt+'</span>'+(w.locked?'🔒':(w.due_at?esc(dday(w.due_at)):''))+'</span></button>'}).join('')+
+     '</nav>'+
+     '<article class="detail card" id="detail"></article>'+
+   '</section>';
+  $('#disSave').onclick=function(){var v=$('#disIn').value.trim();api('fb_set_disease',{p_disease:v}).then(function(){ME.team.disease=v;toast('질환을 저장했습니다.')}).catch(function(e){toast(errMsg(e),true)})};
+  $$('#weekNav [data-week]').forEach(function(b){b.onclick=function(){
+    var w=+b.dataset.week;if(w===curWeek)return;
+    if(dirty&&!confirm('저장하지 않은 내용이 있습니다. 다른 주차로 이동할까요?'))return;
+    dirty=false;curWeek=w;$$('#weekNav .wk').forEach(function(x){x.classList.toggle('on',+x.dataset.week===w)});renderDetail();
+  }});
+  renderDetail();
+}
+function renderDetail(){
+  var box=$('#detail');
+  var w=(ME.weeks||[]).find(function(x){return x.week===curWeek});
+  if(!w){box.innerHTML='<div class="empty">주차가 아직 없습니다.</div>';return}
+  var sub=subOf(w.week)||{},fb=fbOf(w.week),locked=!!w.locked;
+  var late=sub.submitted_at&&w.due_at&&new Date(sub.submitted_at)>new Date(w.due_at);
+  var fbHtml='';
+  if(fb){
+    fbHtml='<div class="fbbox'+(fb.status==='revise'?' revise':'')+'"><div class="fbh"><b>교수 피드백</b>'+
+     (fb.status==='revise'?'<span class="chip c-warn">보완 요청</span>':'<span class="chip c-ok">완료</span>')+
+     (fb.score!=null?'<span class="score">'+esc(fb.score)+'점</span>':'')+'<span class="tiny muted" style="margin-left:auto">'+esc(dt(fb.updated_at))+'</span></div>'+
+     '<div class="fbtext">'+(fb.comment?linkify(fb.comment):'<span class="muted">코멘트 없음</span>')+'</div></div>';
+  }
+  var links=(sub.links||[]).join('\n');
+  box.innerHTML=
+   '<div class="hd"><div class="kick">'+w.week+'주차</div><h2>'+esc(w.title||(w.week+'주차'))+'</h2>'+
+    '<div class="row"><span class="due">📅 마감 '+(w.due_at?esc(dt(w.due_at))+' · <b>'+esc(dday(w.due_at))+'</b>':'<span class="muted">미정</span>')+'</span>'+(locked?'<span class="chip c-none">🔒 잠김</span>':'')+(late?'<span class="chip c-bad">마감 후 제출</span>':'')+'</div>'+
+    (w.description?'<p class="sub small" style="margin:10px 0 0;white-space:pre-wrap">'+linkify(w.description)+'</p>':'')+'</div>'+
+   '<div class="body">'+fbHtml+
+    (locked?'<div class="lockmsg">이 주차는 교수님이 잠가서 제출·수정할 수 없습니다. 내용은 볼 수 있습니다.</div>':'')+
+    '<label class="f">결과물 제목<input class="in" id="sTitle" maxlength="200" placeholder="예: 오십견 병력청취 질문지 v1" value="'+esc(sub.title||'')+'"'+(locked?' disabled':'')+'></label>'+
+    '<label class="f">내용 · 설명<textarea class="in" id="sContent" rows="10" placeholder="이번 주에 한 일, 결과물 설명, AI를 어떻게 활용했는지, 조원별 역할 등을 적어 주세요."'+(locked?' disabled':'')+'>'+esc(sub.content||'')+'</textarea></label>'+
+    '<label class="f">링크 (한 줄에 하나)<textarea class="in" id="sLinks" rows="3" placeholder="https://… (배포한 웹앱, 구글 드라이브, 발표 자료 등)"'+(locked?' disabled':'')+'>'+esc(links)+'</textarea></label>'+
+    '<div class="f" style="margin-bottom:0"><span>첨부 파일 <span class="muted tiny">(파일당 2MB, 최대 5개 · 사진은 자동으로 줄여서 올립니다)</span></span>'+
+      '<div class="files" id="fileList">'+((sub.files||[]).map(function(f){return '<div class="file"><span>'+(/^image\//.test(f.mime)?'🖼️':'📄')+'</span><span class="nm">'+esc(f.name)+'</span><span class="tiny muted">'+kb(f.size)+'</span><button class="btn sm" type="button" data-dl="'+esc(f.id)+'">열기</button>'+(locked?'':'<button class="btn sm danger" type="button" data-rm="'+esc(f.id)+'">삭제</button>')+'</div>'}).join('')||'<div class="tiny muted">첨부 없음</div>')+'</div>'+
+      (locked?'':'<label class="drop" id="drop"><input type="file" id="fileIn" multiple hidden>📎 파일을 여기로 끌어다 놓거나 <b style="color:var(--accent)">클릭해서 선택</b></label>')+
+    '</div>'+
+    '<div class="savebar"><div class="meta">'+(sub.updated_at?'마지막 저장: '+esc(sub.submitted_by_name||sub.submitted_by||'')+' · '+esc(dt(sub.updated_at))+' · '+esc(sub.revision)+'번째 저장':'아직 제출하지 않았습니다. 조원 누구나 제출·수정할 수 있습니다.')+'</div>'+
+      (locked?'':'<button class="btn primary" id="sSave" type="button">'+(sub.submitted_at?'수정 내용 저장':'제출하기')+'</button>')+'</div>'+
+   '</div>';
+  if(fb&&!fb.read_at){api('fb_mark_read',{p_week:w.week}).then(function(){fb.read_at=new Date().toISOString();refreshNav()}).catch(function(){})}
+  ['#sTitle','#sContent','#sLinks'].forEach(function(s){var el=$(s);if(el)el.addEventListener('input',function(){dirty=true})});
+  if(!locked){
+    $('#sSave').onclick=saveSub;
+    var fi=$('#fileIn'),drop=$('#drop');
+    fi.onchange=function(){upload(Array.prototype.slice.call(fi.files));fi.value=''};
+    ['dragenter','dragover'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('on')})});
+    ['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('on')})});
+    drop.addEventListener('drop',function(e){upload(Array.prototype.slice.call(e.dataTransfer.files||[]))});
+  }
+  $$('#fileList [data-dl]').forEach(function(b){b.onclick=function(){openFile(b.dataset.dl)}});
+  $$('#fileList [data-rm]').forEach(function(b){b.onclick=function(){
+    if(!confirm('이 첨부 파일을 삭제할까요?'))return;
+    api('fb_delete_file',{p_id:b.dataset.rm}).then(function(s){putSub(s);renderDetailKeep();toast('삭제했습니다.')}).catch(function(e){toast(errMsg(e),true)});
+  }});
+}
+function refreshNav(){
+  $$('#weekNav [data-week]').forEach(function(b){
+    var w=(ME.weeks||[]).find(function(x){return x.week===+b.dataset.week});var st=weekState(w,subOf(w.week),fbOf(w.week));
+    var c=b.querySelector('.chip');c.className='chip '+st.cls;c.textContent=st.txt;
+  });
+}
+function putSub(s){if(!s)return;ME.submissions=(ME.submissions||[]).filter(function(x){return x&&x.week!==s.week});ME.submissions.push(s)}
+function renderDetailKeep(){
+  var keep={};['#sTitle','#sContent','#sLinks'].forEach(function(s){var el=$(s);if(el)keep[s]=el.value});
+  var wasDirty=dirty;renderDetail();refreshNav();
+  if(wasDirty){Object.keys(keep).forEach(function(s){var el=$(s);if(el)el.value=keep[s]});dirty=true}
+}
+function saveSub(){
+  var btn=$('#sSave');btn.disabled=true;
+  var links=$('#sLinks').value.split(/\n+/).map(function(x){return x.trim()}).filter(Boolean).slice(0,20);
+  api('fb_save_submission',{p_week:curWeek,p_title:$('#sTitle').value.trim(),p_content:$('#sContent').value,p_links:links})
+   .then(function(s){dirty=false;putSub(s);renderDetail();refreshNav();toast('저장했습니다. 조원 모두에게 보입니다.')})
+   .catch(function(e){btn.disabled=false;toast(errMsg(e),true)});
+}
+function shrinkImage(file){
+  return new Promise(function(res){
+    if(!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size<900*1024)return res(file);
+    var img=new Image(),url=URL.createObjectURL(file);
+    img.onload=function(){
+      var max=1800,w=img.naturalWidth,h=img.naturalHeight,s=Math.min(1,max/Math.max(w,h));
+      var c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(h*s);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+      c.toBlob(function(b){if(!b||b.size>=file.size)return res(file);res(new File([b],file.name.replace(/\.(png|webp)$/i,'.jpg'),{type:'image/jpeg'}))},'image/jpeg',.85);
+    };
+    img.onerror=function(){URL.revokeObjectURL(url);res(file)};img.src=url;
+  });
+}
+function toB64(file){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]||'')};r.onerror=rej;r.readAsDataURL(file)})}
+function upload(files){
+  if(!files.length)return;
+  var chain=Promise.resolve(),n=0;
+  toast('파일을 올리는 중…');
+  files.forEach(function(f){
+    chain=chain.then(function(){return shrinkImage(f)}).then(function(f2){
+      if(f2.size>2*1024*1024){toast('"'+f.name+'" — '+ERR.toolarge,true);return}
+      return toB64(f2).then(function(b64){return api('fb_upload_file',{p_week:curWeek,p_name:f2.name,p_mime:f2.type||'application/octet-stream',p_size:f2.size,p_data:b64})})
+        .then(function(s){putSub(s);n++;renderDetailKeep()});
+    }).catch(function(e){toast(errMsg(e),true)});
+  });
+  chain.then(function(){if(n)toast(n+'개 파일을 올렸습니다.')});
+}
+function openFile(id){
+  var win=null;
+  api('fb_get_file',{p_id:id}).then(function(f){
+    var bin=atob(f.data),arr=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+    var url=URL.createObjectURL(new Blob([arr],{type:f.mime||'application/octet-stream'}));
+    if(/^(image\/|application\/pdf|text\/)/.test(f.mime)){win=window.open(url,'_blank');if(win)return}
+    var a=document.createElement('a');a.href=url;a.download=f.name||'file';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url)},60000);
+  }).catch(function(e){toast(errMsg(e),true)});
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'&&ME&&TOKEN&&!dirty&&!$('#drawer').classList.contains('on'))reload(false);
+});
+
+/* ================= 교수 화면 ================= */
+var AD=null,atab='board',klass='all';
+function loadAdmin(){return Promise.all([api('fb_admin_overview'),api('fb_admin_settings')]).then(function(r){AD=r[0];AD.settings=r[1];renderAdmin()})}
+function joinBar(){var st=AD.settings||{};return '<div class="joinbar no-print"><span>'+(st.join_open?'🟢 학생 직접 가입 <b>허용</b>':'⏸ 학생 직접 가입 <b>닫힘</b>')+'</span>'+(st.join_open?'<span>수업 가입 코드</span><span class="jc">'+esc(st.join_code)+'</span><span class="muted tiny">조당 최대 '+esc(st.max_members)+'명</span>':'')+'<button class="btn sm" type="button" data-gosettings style="margin-left:auto">가입 설정</button></div>'}
+function subKey(t,w){return t+'|'+w}
+function indexAD(){
+  AD._sub={};AD._fb={};
+  (AD.subs||[]).forEach(function(s){AD._sub[subKey(s.team_id,s.week)]=s});
+  (AD.feedback||[]).forEach(function(f){AD._fb[subKey(f.team_id,f.week)]=f});
+}
+function cellState(t,w){
+  var s=AD._sub[subKey(t.id,w.week)],f=AD._fb[subKey(t.id,w.week)];
+  var late=s&&s.submitted_at&&w.due_at&&new Date(s.submitted_at)>new Date(w.due_at);
+  if(f){
+    if(s&&s.updated_at&&new Date(s.updated_at)>new Date(f.updated_at))return {cls:'resub',txt:'재제출',wait:true,late:late};
+    if(f.status==='revise')return {cls:'revise',txt:'보완',sc:f.score,late:late};
+    return {cls:'ok',txt:f.score!=null?f.score+'점':'완료',late:late};
+  }
+  if(s&&s.submitted_at)return {cls:'sub',txt:'제출',wait:true,late:late};
+  return {cls:'none',txt:'·'};
+}
+function currentWeek(){
+  var ws=AD.weeks||[],now=new Date();
+  var up=ws.filter(function(w){return w.due_at&&new Date(w.due_at)>=new Date(now-3*86400000)}).sort(function(a,b){return new Date(a.due_at)-new Date(b.due_at)})[0];
+  if(up)return up.week;
+  var withSub=ws.filter(function(w){return (AD.subs||[]).some(function(s){return s.week===w.week})});
+  return withSub.length?withSub[withSub.length-1].week:(ws[0]&&ws[0].week);
+}
+function renderAdmin(){
+  indexAD();
+  $('#main').innerHTML='<nav class="atabs no-print">'+[['board','현황판 · 피드백'],['weeks','주차 관리'],['teams','조 · 학생 관리'],['settings','설정 · 내보내기']].map(function(x){return '<button type="button" data-atab="'+x[0]+'" class="'+(atab===x[0]?'on':'')+'">'+x[1]+'</button>'}).join('')+'</nav><div id="apane"></div>';
+  $$('[data-atab]').forEach(function(b){b.onclick=function(){atab=b.dataset.atab;renderAdmin()}});
+  ({board:renderBoard,weeks:renderWeeks,teams:renderTeams,settings:renderSettings})[atab]();
+}
+function teamsShown(){return (AD.teams||[]).filter(function(t){return klass==='all'||t.class===klass})}
+function renderBoard(){
+  var ws=AD.weeks||[],cw=currentWeek(),teams=teamsShown();
+  var wait=0;(AD.teams||[]).forEach(function(t){ws.forEach(function(w){if(cellState(t,w).wait)wait++})});
+  var subNow=(AD.teams||[]).filter(function(t){var s=AD._sub[subKey(t.id,cw)];return s&&s.submitted_at}).length;
+  var members=(AD.teams||[]).reduce(function(a,t){return a+(t.members||[]).length},0);
+  $('#apane').innerHTML=(members<27?joinBar():'')+
+   '<div class="stats">'+
+    '<div class="card stat"><div class="k">'+(cw?cw+'주차 제출':'이번 주 제출')+'</div><div class="v">'+subNow+'<small> / '+(AD.teams||[]).length+'조</small></div></div>'+
+    '<div class="card stat"><div class="k">피드백 대기</div><div class="v" style="color:'+(wait?'var(--info)':'inherit')+'">'+wait+'<small> 건</small></div></div>'+
+    '<div class="card stat"><div class="k">등록 학생</div><div class="v">'+members+'<small> 명</small></div></div>'+
+    '<div class="card stat"><div class="k">첨부 저장 용량</div><div class="v">'+esc(AD.storage_mb)+'<small> MB / 500</small></div></div>'+
+   '</div>'+
+   '<div class="toolbar"><div class="seg">'+[['all','전체'],['A','A반'],['B','B반']].map(function(x){return '<button type="button" data-k="'+x[0]+'" class="'+(klass===x[0]?'on':'')+'">'+x[1]+'</button>'}).join('')+'</div>'+
+    '<button class="btn sm" id="nextWait" type="button"'+(wait?'':' disabled')+'>▶ 피드백 대기 열기</button>'+
+    '<div class="legend"><span class="chip c-sub">제출</span><span class="chip c-new">재제출</span><span class="chip c-ok">완료·점수</span><span class="chip c-warn">보완 요청</span><span class="chip c-none">미제출</span><span class="chip c-bad">● 마감 후</span></div></div>'+
+   '<div class="card gridwrap"><table class="grid"><thead><tr><th class="tm">조</th>'+ws.map(function(w){return '<th class="'+(w.week===cw?'cur':'')+'" title="'+esc(w.title)+'">'+w.week+'주'+(w.locked?' 🔒':'')+'<span class="wt">'+esc(w.title)+'</span></th>'}).join('')+'</tr></thead><tbody>'+
+    (teams.length?teams.map(function(t){
+      return '<tr><td class="tm"><div class="tmname">'+esc(t.name)+'</div><div class="tmdis">'+(t.disease?esc(t.disease):'<span class="muted">질환 미정</span>')+'</div><div class="tmmem">'+((t.members||[]).map(function(m){return esc(m.name||m.student_id)}).join(' · ')||'학생 미등록')+'</div></td>'+
+       ws.map(function(w){var c=cellState(t,w);return '<td><button type="button" class="cell '+c.cls+(c.late?' late':'')+'" data-t="'+esc(t.id)+'" data-w="'+w.week+'" title="'+esc(t.name+' · '+w.week+'주차')+'">'+esc(c.txt)+(c.cls==='revise'&&c.sc!=null?'<small>'+esc(c.sc)+'점</small>':'')+'</button></td>'}).join('')+'</tr>';
+    }).join(''):'<tr><td colspan="'+(ws.length+1)+'" class="empty">조가 없습니다.</td></tr>')+
+   '</tbody></table></div>'+
+   '<p class="tiny muted">칸을 누르면 제출물을 보고 피드백을 남길 수 있습니다. 학생이 피드백 이후 내용을 고치면 <b style="color:var(--new)">재제출</b>로 표시됩니다.</p>';
+  $$('[data-k]').forEach(function(b){b.onclick=function(){klass=b.dataset.k;renderBoard()}});
+  $$('[data-gosettings]').forEach(function(b){b.onclick=function(){atab='settings';renderAdmin()}});
+  $$('.cell').forEach(function(b){b.onclick=function(){openSub(b.dataset.t,+b.dataset.w)}});
+  $('#nextWait').onclick=function(){var n=nextWaiting(null,null);if(n)openSub(n[0],n[1])};
+}
+function nextWaiting(tid,wk){
+  var order={};(AD.teams||[]).forEach(function(t,i){order[t.id]=i});
+  var list=[];(AD.weeks||[]).forEach(function(w){(AD.teams||[]).forEach(function(t){if(cellState(t,w).wait&&!(t.id===tid&&w.week===wk))list.push([t.id,w.week])})});
+  if(!list.length)return null;
+  if(tid==null)return list[0];
+  var after=list.find(function(x){return x[1]>wk||(x[1]===wk&&order[x[0]]>order[tid])});
+  return after||list[0];
+}
+var QUICK=['근거 자료의 출처(논문·교과서)를 함께 적어 주세요.','AI가 만든 내용을 그대로 쓰지 말고 교과서와 비교해 확인하세요.','의학용어를 의학용어 6판 기준으로 고쳐 주세요.','조원별 역할 분담을 구체적으로 적어 주세요.','다음 주차와 연결되도록 잘 정리했습니다.','검사 항목을 질환 특성에 맞게 더 구체화하세요.'];
+function openSub(tid,wk){
+  var t=(AD.teams||[]).find(function(x){return x.id===tid}),w=(AD.weeks||[]).find(function(x){return x.week===wk});
+  var d=$('#drawer');
+  d.innerHTML='<div class="dh"><div class="grow"><div class="tiny muted">'+esc(t.name)+(t.disease?' · '+esc(t.disease):'')+'</div><h2>'+wk+'주차 · '+esc(w.title)+'</h2></div><button class="btn sm" type="button" id="dClose">닫기 ✕</button></div><div class="db"><div class="empty">불러오는 중…</div></div>';
+  $('#drawerBg').classList.add('on');d.classList.add('on');d.setAttribute('aria-hidden','false');
+  $('#dClose').onclick=closeDrawer;
+  api('fb_admin_submission',{p_team:tid,p_week:wk}).then(function(r){
+    var s=r.submission,f=r.feedback||{};
+    var late=s&&s.submitted_at&&w.due_at&&new Date(s.submitted_at)>new Date(w.due_at);
+    var subHtml=s?'<div class="subview"><div class="row"><b style="font-size:16px">'+esc(s.title||'(제목 없음)')+'</b>'+(late?'<span class="chip c-bad">마감 후 제출</span>':'')+'</div>'+
+       '<div class="tiny muted" style="margin-top:4px">처음 제출 '+esc(dt(s.submitted_at))+' · 마지막 저장 '+esc(dt(s.updated_at))+' ('+esc(s.submitted_by_name||s.submitted_by||'')+') · '+esc(s.revision)+'번째 저장'+(w.due_at?' · 마감 '+esc(dt(w.due_at)):'')+'</div>'+
+       '<div class="content">'+(s.content?linkify(s.content):'<span class="muted">내용 없음</span>')+'</div>'+
+       ((s.links||[]).length?'<div class="linkview" style="margin-top:10px"><b class="small">링크</b><br>'+s.links.map(function(l){return linkify(l)}).join('<br>')+'</div>':'')+
+       ((s.files||[]).length?'<div style="margin-top:10px"><b class="small">첨부</b><div class="files">'+s.files.map(function(x){return '<div class="file"><span>'+(/^image\//.test(x.mime)?'🖼️':'📄')+'</span><span class="nm">'+esc(x.name)+'</span><span class="tiny muted">'+kb(x.size)+'</span><button class="btn sm" type="button" data-dl="'+esc(x.id)+'">열기</button></div>'}).join('')+'</div></div>':'')+
+     '</div>':'<div class="subview"><span class="muted">아직 제출물이 없습니다. 미제출에 대한 안내도 피드백으로 남길 수 있습니다.</span></div>';
+    $('#drawer .db').innerHTML=subHtml+
+     '<h3>피드백</h3>'+(f.updated_at?'<div class="tiny muted" style="margin:-4px 0 8px">마지막 피드백 '+esc(dt(f.updated_at))+' · '+(f.read_at?'학생 확인함 '+esc(dt(f.read_at)):'<b style="color:var(--new)">학생 미확인</b>')+'</div>':'')+
+     '<div class="row" style="margin-bottom:10px"><label class="radio"><input type="radio" name="fst" value="done"'+(f.status!=='revise'?' checked':'')+'> 완료</label><label class="radio"><input type="radio" name="fst" value="revise"'+(f.status==='revise'?' checked':'')+'> 보완 요청</label>'+
+      '<label class="small" style="margin-left:auto;font-weight:700;color:var(--sub)">점수 <input class="in" id="fScore" type="number" min="0" max="100" step="0.5" style="display:inline-block;width:90px;margin:0 0 0 6px" value="'+(f.score!=null?esc(f.score):'')+'" placeholder="선택"></label></div>'+
+     '<div class="quick">'+QUICK.map(function(q,i){return '<button type="button" data-q="'+i+'">+ '+esc(q.length>18?q.slice(0,18)+'…':q)+'</button>'}).join('')+'</div>'+
+     '<textarea class="in" id="fComment" rows="9" placeholder="잘한 점, 보완할 점, 다음 주 과제와의 연결 등을 적어 주세요.">'+esc(f.comment||'')+'</textarea>';
+    d.insertAdjacentHTML('beforeend','<div class="df"><div class="row"><button class="btn primary" type="button" id="fSave">피드백 저장</button><button class="btn" type="button" id="fSaveNext">저장 후 다음 대기 ▶</button>'+(f.updated_at?'<button class="btn ghost danger sm" type="button" id="fDel" style="margin-left:auto">피드백 삭제</button>':'')+'</div></div>');
+    $$('#drawer [data-dl]').forEach(function(b){b.onclick=function(){openFile(b.dataset.dl)}});
+    $$('#drawer [data-q]').forEach(function(b){b.onclick=function(){var ta=$('#fComment');ta.value=(ta.value.trim()?ta.value.replace(/\s*$/,'')+'\n':'')+'- '+QUICK[+b.dataset.q];ta.focus()}});
+    var save=function(next){
+      var sc=$('#fScore').value.trim();
+      var st=($('input[name="fst"]:checked')||{}).value||'done';
+      return api('fb_admin_feedback',{p_team:tid,p_week:wk,p_comment:$('#fComment').value,p_score:sc===''?null:+sc,p_status:st}).then(function(){
+        toast('피드백을 저장했습니다.');
+        return loadAdmin().then(function(){
+          if(next){var n=nextWaiting(tid,wk);if(n)openSub(n[0],n[1]);else{closeDrawer();toast('피드백 대기가 모두 끝났습니다.')}}
+          else closeDrawer();
+        });
+      }).catch(function(e){toast(errMsg(e),true)});
+    };
+    $('#fSave').onclick=function(){save(false)};
+    $('#fSaveNext').onclick=function(){save(true)};
+    var del=$('#fDel');if(del)del.onclick=function(){if(!confirm('이 피드백을 삭제할까요?'))return;api('fb_admin_delete_feedback',{p_team:tid,p_week:wk}).then(function(){toast('삭제했습니다.');closeDrawer();return loadAdmin()}).catch(function(e){toast(errMsg(e),true)})};
+  }).catch(function(e){$('#drawer .db').innerHTML='<div class="empty">'+esc(errMsg(e))+'</div>'});
+}
+function closeDrawer(){var d=$('#drawer');d.classList.remove('on');d.setAttribute('aria-hidden','true');$('#drawerBg').classList.remove('on');$$('#drawer .df').forEach(function(x){x.remove()})}
+$('#drawerBg').onclick=closeDrawer;
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#drawer').classList.contains('on'))closeDrawer()});
+
+function renderWeeks(){
+  var ws=AD.weeks||[];
+  var subCount=function(wk){return (AD.subs||[]).filter(function(s){return s.week===wk}).length};
+  $('#apane').innerHTML='<div class="toolbar"><span class="sub small">한 학기 <b>15주</b> 고정입니다. 주차별 제목·설명·마감을 정하고, <b>잠금</b>을 켜면 학생이 더 이상 제출·수정할 수 없습니다.</span></div>'+
+   '<div class="wkcards">'+ws.map(function(w){
+     return '<div class="card wkcard" data-wk="'+w.week+'"><div class="row" style="margin-bottom:8px"><b style="font-size:16px">'+w.week+'주차</b><span class="chip c-none">제출 '+subCount(w.week)+'/'+(AD.teams||[]).length+'</span>'+(w.locked?'<span class="chip c-warn">🔒 잠김</span>':'')+'</div>'+
+      '<label class="f">제목<input class="in" data-f="title" maxlength="120" value="'+esc(w.title)+'"></label>'+
+      '<label class="f">설명 · 과제 안내<textarea class="in" data-f="description" rows="3">'+esc(w.description)+'</textarea></label>'+
+      '<div class="row2"><label class="f" style="margin:0">마감 일시<input class="in" type="datetime-local" data-f="due" value="'+esc(toLocalInput(w.due_at))+'"></label>'+
+      '<label class="radio" style="margin-bottom:2px"><input type="checkbox" data-f="locked"'+(w.locked?' checked':'')+'> 잠금</label></div>'+
+      '<div class="row" style="margin-top:12px"><button class="btn sm primary" type="button" data-save>저장</button></div></div>';
+   }).join('')+'</div>';
+  $$('.wkcard').forEach(function(c){
+    var wk=+c.dataset.wk,g=function(f){return c.querySelector('[data-f="'+f+'"]')};
+    c.querySelector('[data-save]').onclick=function(){
+      api('fb_admin_save_week',{p_week:wk,p_title:g('title').value.trim(),p_description:g('description').value.trim(),p_due:fromLocalInput(g('due').value),p_locked:g('locked').checked})
+       .then(function(){toast(wk+'주차를 저장했습니다.');return loadAdmin()}).catch(function(e){toast(errMsg(e),true)});
+    };
+  });
+}
+
+function renderTeams(){
+  var teams=teamsShown();
+  $('#apane').innerHTML=joinBar()+'<div class="toolbar"><div class="seg">'+[['all','전체'],['A','A반'],['B','B반']].map(function(x){return '<button type="button" data-k="'+x[0]+'" class="'+(klass===x[0]?'on':'')+'">'+x[1]+'</button>'}).join('')+'</div>'+
+    '<span class="sub small">학생이 직접 가입하면 여기에 나타납니다. 교수님이 직접 추가할 수도 있습니다(코드 자동 생성).</span>'+
+    '<button class="btn sm" id="printCodes" type="button" style="margin-left:auto">🖨️ 코드표 인쇄</button><button class="btn sm" id="csvCodes" type="button">코드표 CSV</button></div>'+
+   '<div class="teamcards">'+teams.map(function(t){
+     return '<div class="card teamcard" data-team="'+esc(t.id)+'">'+
+      '<div class="row" style="align-items:end"><label class="f" style="flex:1;margin:0">조 이름<input class="in" data-f="name" maxlength="60" value="'+esc(t.name)+'"></label>'+
+      '<label class="f" style="flex:1.3;margin:0">질환<input class="in" data-f="disease" maxlength="100" value="'+esc(t.disease)+'" placeholder="학생이 직접 입력할 수도 있어요"></label>'+
+      '<button class="btn sm" type="button" data-saveteam>저장</button></div>'+
+      '<table class="mem"><thead><tr><th style="width:96px">학번</th><th>이름</th><th style="width:96px">접속 코드</th><th style="width:84px"></th></tr></thead><tbody>'+
+       (t.members||[]).map(function(m){return '<tr data-sid="'+esc(m.student_id)+'"><td>'+esc(m.student_id)+'</td><td><input data-f="mname" value="'+esc(m.name)+'" maxlength="40"></td><td><span class="code">'+esc(m.code)+'</span></td>'+
+         '<td><button class="btn sm" type="button" data-newcode title="새 코드 만들기">↻</button> <button class="btn sm danger" type="button" data-delm title="삭제">✕</button></td></tr>'}).join('')+
+       '<tr class="addrow"><td><input data-f="nsid" placeholder="학번" inputmode="numeric"></td><td><input data-f="nname" placeholder="이름"></td><td colspan="2"><button class="btn sm primary" type="button" data-addm>+ 추가</button></td></tr>'+
+      '</tbody></table>'+
+      '<details class="bulk"><summary>여러 명 한꺼번에 넣기</summary><p class="tiny muted" style="margin:6px 0">엑셀에서 학번·이름 두 칸을 복사해 붙여 넣거나, 한 줄에 "학번 이름"으로 적으세요.</p><textarea class="in" rows="4" data-f="bulk" placeholder="2026001 홍길동&#10;2026002 김영희&#10;2026003 이철수"></textarea><button class="btn sm primary" type="button" data-bulk style="margin-top:8px">한꺼번에 추가</button></details>'+
+     '</div>';
+   }).join('')+'</div>';
+  $$('[data-k]').forEach(function(b){b.onclick=function(){klass=b.dataset.k;renderTeams()}});
+  $$('.teamcard').forEach(function(c){
+    var tid=c.dataset.team,g=function(f){return c.querySelector('[data-f="'+f+'"]')};
+    c.querySelector('[data-saveteam]').onclick=function(){
+      api('fb_admin_save_team',{p_id:tid,p_name:g('name').value.trim(),p_disease:g('disease').value.trim()}).then(function(){toast('조 정보를 저장했습니다.');return loadAdmin()}).catch(function(e){toast(errMsg(e),true)});
+    };
+    $$('tr[data-sid]',c).forEach(function(tr){
+      var sid=tr.dataset.sid,inp=tr.querySelector('[data-f="mname"]'),orig=inp.value;
+      inp.addEventListener('change',function(){
+        if(inp.value.trim()===orig)return;
+        api('fb_admin_save_member',{p_sid:sid,p_team:tid,p_name:inp.value.trim(),p_code:''}).then(function(){orig=inp.value.trim();toast('이름을 저장했습니다.');var m=findMember(sid);if(m)m.name=orig}).catch(function(e){toast(errMsg(e),true)});
+      });
+      tr.querySelector('[data-newcode]').onclick=function(){
+        if(!confirm(sid+' 학생의 접속 코드를 새로 만들까요? 예전 코드로는 더 이상 로그인할 수 없습니다.'))return;
+        api('fb_admin_new_code',{p_sid:sid}).then(function(r){toast('새 코드: '+r.code);return loadAdmin()}).catch(function(e){toast(errMsg(e),true)});
+      };
+      tr.querySelector('[data-delm]').onclick=function(){
+        if(!confirm(sid+' 학생을 삭제할까요? (제출물은 조에 그대로 남습니다)'))return;
+        api('fb_admin_delete_member',{p_sid:sid}).then(function(){toast('삭제했습니다.');return loadAdmin()}).catch(function(e){toast(errMsg(e),true)});
+      };
+    });
+    var addOne=function(sid,name){
+      var ex=findMember(sid);
+      if(ex&&ex._team!==tid&&!confirm(sid+' 학생은 이미 '+ex._teamName+'에 있습니다. 이 조로 옮길까요?'))return Promise.resolve(false);
+      return api('fb_admin_save_member',{p_sid:sid,p_team:tid,p_name:name,p_code:''}).then(function(){return true});
+    };
+    c.querySelector('[data-addm]').onclick=function(){
+      var sid=g('nsid').value.trim(),name=g('nname').value.trim();
+      if(!sid){toast('학번을 입력하세요.',true);return}
+      addOne(sid,name).then(function(ok){if(ok){toast('추가했습니다.');return loadAdmin()}}).catch(function(e){toast(errMsg(e),true)});
+    };
+    g('nname').addEventListener('keydown',function(e){if(e.key==='Enter')c.querySelector('[data-addm]').click()});
+    c.querySelector('[data-bulk]').onclick=function(){
+      var rows=g('bulk').value.split(/\n+/).map(function(l){var p=l.trim().split(/[\t,; ]+/);return p[0]?{sid:p[0],name:p.slice(1).join(' ')}:null}).filter(Boolean);
+      if(!rows.length){toast('붙여 넣은 내용이 없습니다.',true);return}
+      var chain=Promise.resolve(),n=0;
+      rows.forEach(function(r){chain=chain.then(function(){return addOne(r.sid,r.name)}).then(function(ok){if(ok)n++})});
+      chain.then(function(){toast(n+'명을 추가했습니다.');return loadAdmin()}).catch(function(e){toast(errMsg(e),true);loadAdmin()});
+    };
+  });
+  $('#printCodes').onclick=printCodes;
+  $$('[data-gosettings]').forEach(function(b){b.onclick=function(){atab='settings';renderAdmin()}});
+  $('#csvCodes').onclick=function(){
+    var rows=[['반','조 이름','학번','이름','접속 코드']];
+    (AD.teams||[]).forEach(function(t){(t.members||[]).forEach(function(m){rows.push([t.class+'반',t.name,m.student_id,m.name,m.code])})});
+    downloadCSV(rows,'AIDX_접속코드표.csv');
+  };
+}
+function findMember(sid){var r=null;(AD.teams||[]).forEach(function(t){(t.members||[]).forEach(function(m){if(m.student_id===sid){r=m;m._team=t.id;m._teamName=t.name}})});return r}
+function printCodes(){
+  var url=location.origin+location.pathname;
+  var html='<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><title>AIDX 접속 코드표</title><style>body{font-family:Pretendard,"Malgun Gothic",sans-serif;margin:24px;color:#1c2b3a}h1{font-size:18px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.slip{border:1px dashed #889;border-radius:10px;padding:12px;break-inside:avoid}.slip b{font-size:15px}.c{font-family:monospace;font-size:20px;font-weight:800;letter-spacing:2px;margin-top:6px}.u{font-size:10px;color:#667;margin-top:6px;word-break:break-all}</style></head><body><h1>AIDX 주간 결과물 — 접속 코드 (잘라서 나눠 주세요)</h1><div class="grid">'+
+   (AD.teams||[]).map(function(t){return (t.members||[]).map(function(m){return '<div class="slip"><div>'+esc(t.name)+'</div><b>'+esc(m.name)+' ('+esc(m.student_id)+')</b><div class="c">'+esc(m.code)+'</div><div class="u">'+esc(url)+'</div></div>'}).join('')}).join('')+
+   '</div><script>window.onload=function(){window.print()}<\/script></body></html>';
+  var w=window.open('','_blank');if(!w){toast('팝업이 차단되었습니다. 팝업을 허용해 주세요.',true);return}
+  w.document.open();w.document.write(html);w.document.close();
+}
+function csvCell(v){v=v==null?'':String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function downloadCSV(rows,name){
+  var csv='﻿'+rows.map(function(r){return r.map(csvCell).join(',')}).join('\r\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove();
+}
+function renderSettings(){
+  var st=AD.settings||{};
+  $('#apane').innerHTML='<div class="teamcards">'+
+   '<div class="card pad"><h3>학생 직접 가입</h3><p class="sub small">학생은 로그인 화면의 <b>처음 가입</b>에서 조·학번·이름을 넣고 자기 접속 코드를 정합니다. 아래 <b>수업 가입 코드</b>를 수업 시간에 알려 주세요. 가입이 끝나면 닫아 두는 것이 안전합니다.</p>'+
+    '<label class="radio" style="margin-bottom:12px"><input type="checkbox" id="jOpen"'+(st.join_open?' checked':'')+'> 학생 가입 허용</label>'+
+    '<label class="f">수업 가입 코드 <span class="muted tiny">(영문·숫자 4~20자)</span><div class="row" style="margin-top:5px;flex-wrap:nowrap"><input class="in" id="jCode" style="margin:0;text-transform:uppercase;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;letter-spacing:2px" maxlength="20" value="'+esc(st.join_code||'')+'"><button class="btn sm" type="button" id="jNew" style="white-space:nowrap">새로 만들기</button></div></label>'+
+    '<label class="f">조당 최대 인원<select class="in" id="jMax" style="width:120px">'+[1,2,3,4,5,6].map(function(n){return '<option'+(n===st.max_members?' selected':'')+'>'+n+'</option>'}).join('')+'</select></label>'+
+    '<button class="btn primary" id="jSave" type="button">가입 설정 저장</button></div>'+
+   '<div class="card pad"><h3>제출물 · 피드백 내려받기</h3><p class="sub small">모든 조·주차의 제출 내용, 점수, 피드백을 엑셀에서 열 수 있는 CSV로 내려받습니다. 학기말 성적 정리와 백업에 쓰세요.</p><button class="btn primary" id="expAll" type="button">CSV 내려받기</button></div>'+
+   '<div class="card pad"><h3>교수 접속 코드 바꾸기</h3><p class="sub small">처음 코드(CHANGE-ME-2026)는 꼭 바꿔 주세요. 8자 이상.</p>'+
+    '<label class="f">현재 코드<input class="in" type="password" id="oc" autocomplete="current-password"></label><label class="f">새 코드<input class="in" type="password" id="nc" autocomplete="new-password"></label><label class="f">새 코드 확인<input class="in" type="password" id="nc2" autocomplete="new-password"></label><button class="btn primary" id="chg" type="button">바꾸기</button></div>'+
+   '<div class="card pad"><h3>학생에게 알려 줄 주소</h3><p class="small"><span class="code" style="word-break:break-all">'+esc(location.origin+location.pathname)+'</span></p><p class="sub small">처음에는 <b>처음 가입</b>으로 가입하고, 다음부터는 <b>학생 로그인</b>에서 조·학번·자기 접속 코드로 들어옵니다. 학생이 코드를 잊으면 <b>조 · 학생 관리</b>에서 ↻로 새 코드를 만들어 알려 주세요.</p></div>'+
+  '</div>';
+  $('#jNew').onclick=function(){var abc='ABCDEFGHJKMNPQRSTUVWXYZ23456789',r='';for(var i=0;i<6;i++)r+=abc[Math.floor(Math.random()*abc.length)];$('#jCode').value=r};
+  $('#jSave').onclick=function(){
+    api('fb_admin_save_settings',{p_open:$('#jOpen').checked,p_join:$('#jCode').value.trim(),p_max:+$('#jMax').value}).then(function(){toast('가입 설정을 저장했습니다.');return loadAdmin()}).catch(function(e){toast(errMsg(e),true)});
+  };
+  $('#expAll').onclick=function(){
+    api('fb_admin_export').then(function(list){
+      var rows=[['반','조','질환','주차','주차 제목','마감','결과물 제목','내용','링크','첨부 수','마지막 저장자','처음 제출','마지막 저장','저장 횟수','마감 후 제출','상태','점수','피드백','피드백 일시','학생 확인']];
+      list.forEach(function(r){var late=r.submitted_at&&r.due_at&&new Date(r.submitted_at)>new Date(r.due_at);
+        rows.push([r['class']+'반',r.team,r.disease,r.week,r.week_title,dt(r.due_at),r.title,r.content,(r.links||[]).join(' \n'),r.nfiles,r.submitted_by,dt(r.submitted_at),dt(r.updated_at),r.revision,late?'예':'',r.status==='revise'?'보완 요청':(r.status==='done'?'완료':''),r.score,r.comment,dt(r.feedback_at),r.read_at?'확인':''])});
+      downloadCSV(rows,'AIDX_제출_피드백_'+new Date().toISOString().slice(0,10)+'.csv');
+    }).catch(function(e){toast(errMsg(e),true)});
+  };
+  $('#chg').onclick=function(){
+    var a=$('#oc').value,b=$('#nc').value,c=$('#nc2').value;
+    if(b!==c){toast('새 코드가 서로 다릅니다.',true);return}
+    api('fb_admin_change_code',{p_old:a,p_new:b}).then(function(){toast('접속 코드를 바꿨습니다.');$('#oc').value=$('#nc').value=$('#nc2').value=''}).catch(function(e){toast(errMsg(e),true)});
+  };
+}
+
+/* ================= 시작 ================= */
+if(!/^https?:\/\/.+/.test(BASE)||KEY.length<20){show('setup');return}
+boot();
+})();
+</script>
+</body>
+</html>
