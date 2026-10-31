@@ -117,6 +117,19 @@ textarea.in{resize:vertical;min-height:90px;line-height:1.6}
 .drop.on{border-color:var(--accent);background:var(--infobg)}
 .savebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--line2)}
 .savebar .meta{flex:1;font-size:12.5px;color:var(--mute)}
+.appbox{border:1px solid #cfe0fb;background:linear-gradient(180deg,#f3f8ff,#fbfdff);border-radius:14px;padding:14px 16px 4px;margin-bottom:16px}
+.appbox h3{display:flex;align-items:center;gap:8px;margin:0 0 4px}
+.appbox .hint{font-size:12.5px;color:var(--sub);margin:0 0 12px}
+.urlrow{display:flex;gap:8px;align-items:center;margin-top:5px}
+.urlrow .in{margin:0}
+.apppanel{border:1px solid #cfe0fb;background:#f6faff;border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.apppanel .u{word-break:break-all;font-weight:700}
+.appframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-top:10px;display:block}
+.viewer{position:fixed;inset:0;z-index:300;background:#0d2438cc;display:none;flex-direction:column;padding:16px}
+.viewer.on{display:flex}
+.viewer .vh{display:flex;gap:10px;align-items:center;color:#fff;padding:0 4px 10px}
+.viewer .vh b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viewer iframe{flex:1;width:100%;border:0;border-radius:12px;background:#fff}
 .lockmsg{background:var(--graybg);border-radius:10px;padding:10px 14px;font-size:13.5px;color:var(--sub);margin-bottom:14px}
 .linkview a{word-break:break-all}
 
@@ -269,6 +282,7 @@ details.bulk summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--a
 
 <div class="drawer-bg" id="drawerBg"></div>
 <aside class="drawer" id="drawer" aria-hidden="true"></aside>
+<div class="viewer" id="viewer" role="dialog" aria-modal="true"><div class="vh"><b id="vTitle"></b><span class="tiny" style="opacity:.8">안전 모드(샌드박스)로 실행 중</span><button class="btn sm" type="button" id="vClose">닫기 ✕</button></div><iframe id="vFrame" sandbox="allow-scripts allow-forms allow-modals allow-popups" referrerpolicy="no-referrer"></iframe></div>
 <div class="toast" id="toast"></div>
 
 <script src="config.js"></script>
@@ -459,6 +473,7 @@ function renderDetail(){
   var w=(ME.weeks||[]).find(function(x){return x.week===curWeek});
   if(!w){box.innerHTML='<div class="empty">주차가 아직 없습니다.</div>';return}
   var sub=subOf(w.week)||{},fb=fbOf(w.week),locked=!!w.locked;
+  var isApp=w.kind!=='general',showApp=isApp||!!sub.app_url||!!sub.repo_url;
   var late=sub.submitted_at&&w.due_at&&new Date(sub.submitted_at)>new Date(w.due_at);
   var fbHtml='';
   if(fb){
@@ -470,22 +485,26 @@ function renderDetail(){
   var links=(sub.links||[]).join('\n');
   box.innerHTML=
    '<div class="hd"><div class="kick">'+w.week+'주차</div><h2>'+esc(w.title||(w.week+'주차'))+'</h2>'+
-    '<div class="row"><span class="due">📅 마감 '+(w.due_at?esc(dt(w.due_at))+' · <b>'+esc(dday(w.due_at))+'</b>':'<span class="muted">미정</span>')+'</span>'+(locked?'<span class="chip c-none">🔒 잠김</span>':'')+(late?'<span class="chip c-bad">마감 후 제출</span>':'')+'</div>'+
+    '<div class="row">'+(isApp?'<span class="chip c-sub">🌐 웹앱 과제</span>':'')+'<span class="due">📅 마감 '+(w.due_at?esc(dt(w.due_at))+' · <b>'+esc(dday(w.due_at))+'</b>':'<span class="muted">미정</span>')+'</span>'+(locked?'<span class="chip c-none">🔒 잠김</span>':'')+(late?'<span class="chip c-bad">마감 후 제출</span>':'')+'</div>'+
     (w.description?'<p class="sub small" style="margin:10px 0 0;white-space:pre-wrap">'+linkify(w.description)+'</p>':'')+'</div>'+
    '<div class="body">'+fbHtml+
     (locked?'<div class="lockmsg">이 주차는 교수님이 잠가서 제출·수정할 수 없습니다. 내용은 볼 수 있습니다.</div>':'')+
+    (showApp?'<div class="appbox"><h3>🌐 이번 주 웹앱</h3><p class="hint">AI로 만든 웹앱을 Vercel 등에 배포하고 <b>주소</b>를 넣어 주세요. 배포가 어려우면 아래 <b>첨부 파일</b>에 HTML 파일을 올려도 됩니다.</p>'+
+      '<label class="f">배포 주소'+(isApp?' <span class="chip c-warn" style="font-size:11px">필수</span>':'')+'<div class="urlrow"><input class="in" id="sApp" type="url" inputmode="url" maxlength="500" placeholder="https://우리조-웹앱.vercel.app" value="'+esc(sub.app_url||'')+'"'+(locked?' disabled':'')+'><button class="btn sm" type="button" id="sAppOpen">열어 보기</button></div></label>'+
+      '<label class="f">GitHub 저장소 주소 <span class="muted tiny">(선택)</span><input class="in" id="sRepo" type="url" inputmode="url" maxlength="500" placeholder="https://github.com/아이디/저장소" value="'+esc(sub.repo_url||'')+'"'+(locked?' disabled':'')+'></label></div>':'')+
     '<label class="f">결과물 제목<input class="in" id="sTitle" maxlength="200" placeholder="예: 오십견 병력청취 질문지 v1" value="'+esc(sub.title||'')+'"'+(locked?' disabled':'')+'></label>'+
-    '<label class="f">내용 · 설명<textarea class="in" id="sContent" rows="10" placeholder="이번 주에 한 일, 결과물 설명, AI를 어떻게 활용했는지, 조원별 역할 등을 적어 주세요."'+(locked?' disabled':'')+'>'+esc(sub.content||'')+'</textarea></label>'+
+    '<label class="f">내용 · 설명<textarea class="in" id="sContent" rows="10" placeholder="'+(isApp?'웹앱의 기능, AI에게 어떻게 요청했는지(프롬프트), 이번 주에 고친 점, 조원별 역할 등을 적어 주세요.':'이번 주에 한 일, 결과물 설명, AI를 어떻게 활용했는지, 조원별 역할 등을 적어 주세요.')+'"'+(locked?' disabled':'')+'>'+esc(sub.content||'')+'</textarea></label>'+
     '<label class="f">링크 (한 줄에 하나)<textarea class="in" id="sLinks" rows="3" placeholder="https://… (배포한 웹앱, 구글 드라이브, 발표 자료 등)"'+(locked?' disabled':'')+'>'+esc(links)+'</textarea></label>'+
     '<div class="f" style="margin-bottom:0"><span>첨부 파일 <span class="muted tiny">(파일당 2MB, 최대 5개 · 사진은 자동으로 줄여서 올립니다)</span></span>'+
-      '<div class="files" id="fileList">'+((sub.files||[]).map(function(f){return '<div class="file"><span>'+(/^image\//.test(f.mime)?'🖼️':'📄')+'</span><span class="nm">'+esc(f.name)+'</span><span class="tiny muted">'+kb(f.size)+'</span><button class="btn sm" type="button" data-dl="'+esc(f.id)+'">열기</button>'+(locked?'':'<button class="btn sm danger" type="button" data-rm="'+esc(f.id)+'">삭제</button>')+'</div>'}).join('')||'<div class="tiny muted">첨부 없음</div>')+'</div>'+
+      '<div class="files" id="fileList">'+((sub.files||[]).map(function(f){return '<div class="file"><span>'+(/^image\//.test(f.mime)?'🖼️':'📄')+'</span><span class="nm">'+esc(f.name)+'</span><span class="tiny muted">'+kb(f.size)+'</span><button class="btn sm" type="button" data-dl="'+esc(f.id)+'">'+(/\.html?$/i.test(f.name)||f.mime==='text/html'?'▶ 실행':'열기')+'</button>'+(locked?'':'<button class="btn sm danger" type="button" data-rm="'+esc(f.id)+'">삭제</button>')+'</div>'}).join('')||'<div class="tiny muted">첨부 없음</div>')+'</div>'+
       (locked?'':'<label class="drop" id="drop"><input type="file" id="fileIn" multiple hidden>📎 파일을 여기로 끌어다 놓거나 <b style="color:var(--accent)">클릭해서 선택</b></label>')+
     '</div>'+
     '<div class="savebar"><div class="meta">'+(sub.updated_at?'마지막 저장: '+esc(sub.submitted_by_name||sub.submitted_by||'')+' · '+esc(dt(sub.updated_at))+' · '+esc(sub.revision)+'번째 저장':'아직 제출하지 않았습니다. 조원 누구나 제출·수정할 수 있습니다.')+'</div>'+
       (locked?'':'<button class="btn primary" id="sSave" type="button">'+(sub.submitted_at?'수정 내용 저장':'제출하기')+'</button>')+'</div>'+
    '</div>';
   if(fb&&!fb.read_at){api('fb_mark_read',{p_week:w.week}).then(function(){fb.read_at=new Date().toISOString();refreshNav()}).catch(function(){})}
-  ['#sTitle','#sContent','#sLinks'].forEach(function(s){var el=$(s);if(el)el.addEventListener('input',function(){dirty=true})});
+  ['#sTitle','#sContent','#sLinks','#sApp','#sRepo'].forEach(function(s){var el=$(s);if(el)el.addEventListener('input',function(){dirty=true})});
+  var ao=$('#sAppOpen');if(ao)ao.onclick=function(){var u=$('#sApp').value.trim();if(!/^https?:\/\/\S+$/i.test(u)){toast('https:// 로 시작하는 주소를 넣어 주세요.',true);return}window.open(u,'_blank','noopener')};
   if(!locked){
     $('#sSave').onclick=saveSub;
     var fi=$('#fileIn'),drop=$('#drop');
@@ -508,14 +527,20 @@ function refreshNav(){
 }
 function putSub(s){if(!s)return;ME.submissions=(ME.submissions||[]).filter(function(x){return x&&x.week!==s.week});ME.submissions.push(s)}
 function renderDetailKeep(){
-  var keep={};['#sTitle','#sContent','#sLinks'].forEach(function(s){var el=$(s);if(el)keep[s]=el.value});
+  var keep={};['#sTitle','#sContent','#sLinks','#sApp','#sRepo'].forEach(function(s){var el=$(s);if(el)keep[s]=el.value});
   var wasDirty=dirty;renderDetail();refreshNav();
   if(wasDirty){Object.keys(keep).forEach(function(s){var el=$(s);if(el)el.value=keep[s]});dirty=true}
 }
 function saveSub(){
+  var w=(ME.weeks||[]).find(function(x){return x.week===curWeek})||{},sub=subOf(curWeek)||{};
+  var app=$('#sApp')?$('#sApp').value.trim():'',repo=$('#sRepo')?$('#sRepo').value.trim():'';
+  if(app&&!/^https?:\/\/\S+$/i.test(app)){toast('배포 주소는 https:// 로 시작해야 합니다.',true);return}
+  if(repo&&!/^https?:\/\/\S+$/i.test(repo)){toast('GitHub 주소는 https:// 로 시작해야 합니다.',true);return}
+  var hasHtml=(sub.files||[]).some(function(f){return f.mime==='text/html'||/\.html?$/i.test(f.name)});
+  if(w.kind!=='general'&&!app&&!hasHtml&&!confirm('웹앱 과제인데 배포 주소나 HTML 파일이 없습니다. 그래도 저장할까요?'))return;
   var btn=$('#sSave');btn.disabled=true;
   var links=$('#sLinks').value.split(/\n+/).map(function(x){return x.trim()}).filter(Boolean).slice(0,20);
-  api('fb_save_submission',{p_week:curWeek,p_title:$('#sTitle').value.trim(),p_content:$('#sContent').value,p_links:links})
+  api('fb_save_submission',{p_week:curWeek,p_title:$('#sTitle').value.trim(),p_content:$('#sContent').value,p_links:links,p_app_url:app,p_repo_url:repo})
    .then(function(s){dirty=false;putSub(s);renderDetail();refreshNav();toast('저장했습니다. 조원 모두에게 보입니다.')})
    .catch(function(e){btn.disabled=false;toast(errMsg(e),true)});
 }
@@ -550,12 +575,18 @@ function openFile(id){
   var win=null;
   api('fb_get_file',{p_id:id}).then(function(f){
     var bin=atob(f.data),arr=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
-    var url=URL.createObjectURL(new Blob([arr],{type:f.mime||'application/octet-stream'}));
-    if(/^(image\/|application\/pdf|text\/)/.test(f.mime)){win=window.open(url,'_blank');if(win)return}
+    var isHtml=f.mime==='text/html'||/\.html?$/i.test(f.name||'');
+    if(isHtml){showViewer(f.name,new TextDecoder('utf-8').decode(arr));return}
+    var safeInline=/^(image\/(png|jpe?g|gif|webp)|application\/pdf|text\/plain)$/i.test(f.mime||'');
+    var url=URL.createObjectURL(new Blob([arr],{type:safeInline?f.mime:'application/octet-stream'}));
+    if(safeInline){win=window.open(url,'_blank');if(win)return}
     var a=document.createElement('a');a.href=url;a.download=f.name||'file';document.body.appendChild(a);a.click();a.remove();
     setTimeout(function(){URL.revokeObjectURL(url)},60000);
   }).catch(function(e){toast(errMsg(e),true)});
 }
+function showViewer(title,html){$('#vTitle').textContent='▶ '+title;$('#vFrame').srcdoc=html;$('#viewer').classList.add('on')}
+function closeViewer(){$('#viewer').classList.remove('on');$('#vFrame').srcdoc=''}
+$('#vClose').onclick=closeViewer;
 document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='visible'&&ME&&TOKEN&&!dirty&&!$('#drawer').classList.contains('on'))reload(false);
 });
@@ -573,12 +604,13 @@ function indexAD(){
 function cellState(t,w){
   var s=AD._sub[subKey(t.id,w.week)],f=AD._fb[subKey(t.id,w.week)];
   var late=s&&s.submitted_at&&w.due_at&&new Date(s.submitted_at)>new Date(w.due_at);
+  var app=!!(s&&s.has_app);
   if(f){
-    if(s&&s.updated_at&&new Date(s.updated_at)>new Date(f.updated_at))return {cls:'resub',txt:'재제출',wait:true,late:late};
-    if(f.status==='revise')return {cls:'revise',txt:'보완',sc:f.score,late:late};
-    return {cls:'ok',txt:f.score!=null?f.score+'점':'완료',late:late};
+    if(s&&s.updated_at&&new Date(s.updated_at)>new Date(f.updated_at))return {cls:'resub',txt:'재제출',wait:true,late:late,app:app};
+    if(f.status==='revise')return {cls:'revise',txt:'보완',sc:f.score,late:late,app:app};
+    return {cls:'ok',txt:f.score!=null?f.score+'점':'완료',late:late,app:app};
   }
-  if(s&&s.submitted_at)return {cls:'sub',txt:'제출',wait:true,late:late};
+  if(s&&s.submitted_at)return {cls:'sub',txt:'제출',wait:true,late:late,app:app};
   return {cls:'none',txt:'·'};
 }
 function currentWeek(){
@@ -609,11 +641,11 @@ function renderBoard(){
    '</div>'+
    '<div class="toolbar"><div class="seg">'+[['all','전체'],['A','A반'],['B','B반']].map(function(x){return '<button type="button" data-k="'+x[0]+'" class="'+(klass===x[0]?'on':'')+'">'+x[1]+'</button>'}).join('')+'</div>'+
     '<button class="btn sm" id="nextWait" type="button"'+(wait?'':' disabled')+'>▶ 피드백 대기 열기</button>'+
-    '<div class="legend"><span class="chip c-sub">제출</span><span class="chip c-new">재제출</span><span class="chip c-ok">완료·점수</span><span class="chip c-warn">보완 요청</span><span class="chip c-none">미제출</span><span class="chip c-bad">● 마감 후</span></div></div>'+
+    '<div class="legend"><span class="chip c-sub">제출</span><span class="chip c-new">재제출</span><span class="chip c-ok">완료·점수</span><span class="chip c-warn">보완 요청</span><span class="chip c-none">미제출</span><span class="chip c-bad">● 마감 후</span><span class="chip c-none">🌐 웹앱 제출</span></div></div>'+
    '<div class="card gridwrap"><table class="grid"><thead><tr><th class="tm">조</th>'+ws.map(function(w){return '<th class="'+(w.week===cw?'cur':'')+'" title="'+esc(w.title)+'">'+w.week+'주'+(w.locked?' 🔒':'')+'<span class="wt">'+esc(w.title)+'</span></th>'}).join('')+'</tr></thead><tbody>'+
     (teams.length?teams.map(function(t){
       return '<tr><td class="tm"><div class="tmname">'+esc(t.name)+'</div><div class="tmdis">'+(t.disease?esc(t.disease):'<span class="muted">질환 미정</span>')+'</div><div class="tmmem">'+((t.members||[]).map(function(m){return esc(m.name||m.student_id)}).join(' · ')||'학생 미등록')+'</div></td>'+
-       ws.map(function(w){var c=cellState(t,w);return '<td><button type="button" class="cell '+c.cls+(c.late?' late':'')+'" data-t="'+esc(t.id)+'" data-w="'+w.week+'" title="'+esc(t.name+' · '+w.week+'주차')+'">'+esc(c.txt)+(c.cls==='revise'&&c.sc!=null?'<small>'+esc(c.sc)+'점</small>':'')+'</button></td>'}).join('')+'</tr>';
+       ws.map(function(w){var c=cellState(t,w);return '<td><button type="button" class="cell '+c.cls+(c.late?' late':'')+'" data-t="'+esc(t.id)+'" data-w="'+w.week+'" title="'+esc(t.name+' · '+w.week+'주차')+'">'+esc(c.txt)+(c.cls==='revise'&&c.sc!=null?'<small>'+esc(c.sc)+'점</small>':(c.app?'<small>🌐 웹앱</small>':''))+'</button></td>'}).join('')+'</tr>';
     }).join(''):'<tr><td colspan="'+(ws.length+1)+'" class="empty">조가 없습니다.</td></tr>')+
    '</tbody></table></div>'+
    '<p class="tiny muted">칸을 누르면 제출물을 보고 피드백을 남길 수 있습니다. 학생이 피드백 이후 내용을 고치면 <b style="color:var(--new)">재제출</b>로 표시됩니다.</p>';
@@ -634,19 +666,28 @@ var QUICK=['근거 자료의 출처(논문·교과서)를 함께 적어 주세�
 function openSub(tid,wk){
   var t=(AD.teams||[]).find(function(x){return x.id===tid}),w=(AD.weeks||[]).find(function(x){return x.week===wk});
   var d=$('#drawer');
-  d.innerHTML='<div class="dh"><div class="grow"><div class="tiny muted">'+esc(t.name)+(t.disease?' · '+esc(t.disease):'')+'</div><h2>'+wk+'주차 · '+esc(w.title)+'</h2></div><button class="btn sm" type="button" id="dClose">닫기 ✕</button></div><div class="db"><div class="empty">불러오는 중…</div></div>';
+  d.innerHTML='<div class="dh"><div class="grow"><div class="tiny muted">'+esc(t.name)+(t.disease?' · '+esc(t.disease):'')+'</div><h2>'+wk+'주차 · '+esc(w.title)+(w.kind!=='general'?' <span class="chip c-sub" style="vertical-align:middle">🌐 웹앱 과제</span>':'')+'</h2></div><button class="btn sm" type="button" id="dClose">닫기 ✕</button></div><div class="db"><div class="empty">불러오는 중…</div></div>';
   $('#drawerBg').classList.add('on');d.classList.add('on');d.setAttribute('aria-hidden','false');
   $('#dClose').onclick=closeDrawer;
   api('fb_admin_submission',{p_team:tid,p_week:wk}).then(function(r){
     var s=r.submission,f=r.feedback||{};
     var late=s&&s.submitted_at&&w.due_at&&new Date(s.submitted_at)>new Date(w.due_at);
+    var appHtml='';
+    var htmlFiles=s?(s.files||[]).filter(function(x){return x.mime==='text/html'||/\.html?$/i.test(x.name)}):[];
+    if(s&&(s.app_url||s.repo_url||htmlFiles.length)){
+      appHtml='<div class="apppanel"><div class="row"><b>🌐 제출한 웹앱</b>'+(s.app_url?'<a class="btn sm" href="'+esc(s.app_url)+'" target="_blank" rel="noopener noreferrer" style="margin-left:auto;text-decoration:none">새 창에서 열기 ↗</a><button class="btn sm primary" type="button" id="appRun">여기서 실행</button>':'')+'</div>'+
+       (s.app_url?'<div class="u small" style="margin-top:6px">'+linkify(s.app_url)+'</div>':'<div class="small muted" style="margin-top:6px">배포 주소 없음</div>')+
+       (s.repo_url?'<div class="small" style="margin-top:4px">GitHub: '+linkify(s.repo_url)+'</div>':'')+
+       (htmlFiles.length?'<div class="row" style="margin-top:8px">'+htmlFiles.map(function(x){return '<button class="btn sm" type="button" data-dl="'+esc(x.id)+'">▶ '+esc(x.name)+' 실행</button>'}).join('')+'</div>':'')+
+       '<div id="appFrameBox"></div></div>';
+    }else if(w.kind!=='general'){appHtml='<div class="apppanel"><b>🌐 웹앱 과제</b><div class="small muted" style="margin-top:4px">아직 웹앱 주소나 HTML 파일이 없습니다.</div></div>'}
     var subHtml=s?'<div class="subview"><div class="row"><b style="font-size:16px">'+esc(s.title||'(제목 없음)')+'</b>'+(late?'<span class="chip c-bad">마감 후 제출</span>':'')+'</div>'+
        '<div class="tiny muted" style="margin-top:4px">처음 제출 '+esc(dt(s.submitted_at))+' · 마지막 저장 '+esc(dt(s.updated_at))+' ('+esc(s.submitted_by_name||s.submitted_by||'')+') · '+esc(s.revision)+'번째 저장'+(w.due_at?' · 마감 '+esc(dt(w.due_at)):'')+'</div>'+
        '<div class="content">'+(s.content?linkify(s.content):'<span class="muted">내용 없음</span>')+'</div>'+
        ((s.links||[]).length?'<div class="linkview" style="margin-top:10px"><b class="small">링크</b><br>'+s.links.map(function(l){return linkify(l)}).join('<br>')+'</div>':'')+
        ((s.files||[]).length?'<div style="margin-top:10px"><b class="small">첨부</b><div class="files">'+s.files.map(function(x){return '<div class="file"><span>'+(/^image\//.test(x.mime)?'🖼️':'📄')+'</span><span class="nm">'+esc(x.name)+'</span><span class="tiny muted">'+kb(x.size)+'</span><button class="btn sm" type="button" data-dl="'+esc(x.id)+'">열기</button></div>'}).join('')+'</div></div>':'')+
      '</div>':'<div class="subview"><span class="muted">아직 제출물이 없습니다. 미제출에 대한 안내도 피드백으로 남길 수 있습니다.</span></div>';
-    $('#drawer .db').innerHTML=subHtml+
+    $('#drawer .db').innerHTML=appHtml+subHtml+
      '<h3>피드백</h3>'+(f.updated_at?'<div class="tiny muted" style="margin:-4px 0 8px">마지막 피드백 '+esc(dt(f.updated_at))+' · '+(f.read_at?'학생 확인함 '+esc(dt(f.read_at)):'<b style="color:var(--new)">학생 미확인</b>')+'</div>':'')+
      '<div class="row" style="margin-bottom:10px"><label class="radio"><input type="radio" name="fst" value="done"'+(f.status!=='revise'?' checked':'')+'> 완료</label><label class="radio"><input type="radio" name="fst" value="revise"'+(f.status==='revise'?' checked':'')+'> 보완 요청</label>'+
       '<label class="small" style="margin-left:auto;font-weight:700;color:var(--sub)">점수 <input class="in" id="fScore" type="number" min="0" max="100" step="0.5" style="display:inline-block;width:90px;margin:0 0 0 6px" value="'+(f.score!=null?esc(f.score):'')+'" placeholder="선택"></label></div>'+
@@ -654,6 +695,12 @@ function openSub(tid,wk){
      '<textarea class="in" id="fComment" rows="9" placeholder="잘한 점, 보완할 점, 다음 주 과제와의 연결 등을 적어 주세요.">'+esc(f.comment||'')+'</textarea>';
     d.insertAdjacentHTML('beforeend','<div class="df"><div class="row"><button class="btn primary" type="button" id="fSave">피드백 저장</button><button class="btn" type="button" id="fSaveNext">저장 후 다음 대기 ▶</button>'+(f.updated_at?'<button class="btn ghost danger sm" type="button" id="fDel" style="margin-left:auto">피드백 삭제</button>':'')+'</div></div>');
     $$('#drawer [data-dl]').forEach(function(b){b.onclick=function(){openFile(b.dataset.dl)}});
+    var run=$('#appRun');if(run)run.onclick=function(){
+      var box=$('#appFrameBox');if(box.innerHTML){box.innerHTML='';run.textContent='여기서 실행';return}
+      var same=false;try{same=new URL(s.app_url).origin===location.origin}catch(_){}
+      box.innerHTML='<iframe class="appframe" sandbox="allow-scripts allow-forms allow-modals allow-popups'+(same?'':' allow-same-origin')+'" referrerpolicy="no-referrer" src="'+esc(s.app_url)+'"></iframe><div class="tiny muted" style="margin-top:4px">화면이 비어 있으면 그 사이트가 다른 페이지 안에서 열리는 것을 막아 둔 것입니다. <b>새 창에서 열기</b>를 쓰세요.</div>';
+      run.textContent='실행 닫기';
+    };
     $$('#drawer [data-q]').forEach(function(b){b.onclick=function(){var ta=$('#fComment');ta.value=(ta.value.trim()?ta.value.replace(/\s*$/,'')+'\n':'')+'- '+QUICK[+b.dataset.q];ta.focus()}});
     var save=function(next){
       var sc=$('#fScore').value.trim();
@@ -673,14 +720,15 @@ function openSub(tid,wk){
 }
 function closeDrawer(){var d=$('#drawer');d.classList.remove('on');d.setAttribute('aria-hidden','true');$('#drawerBg').classList.remove('on');$$('#drawer .df').forEach(function(x){x.remove()})}
 $('#drawerBg').onclick=closeDrawer;
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('#drawer').classList.contains('on'))closeDrawer()});
+document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;if($('#viewer').classList.contains('on'))closeViewer();else if($('#drawer').classList.contains('on'))closeDrawer()});
 
 function renderWeeks(){
   var ws=AD.weeks||[];
   var subCount=function(wk){return (AD.subs||[]).filter(function(s){return s.week===wk}).length};
-  $('#apane').innerHTML='<div class="toolbar"><span class="sub small">한 학기 <b>15주</b> 고정입니다. 주차별 제목·설명·마감을 정하고, <b>잠금</b>을 켜면 학생이 더 이상 제출·수정할 수 없습니다.</span></div>'+
+  $('#apane').innerHTML='<div class="toolbar"><span class="sub small">한 학기 <b>15주</b> 고정입니다. 주차마다 <b>제출 형식</b>(🌐 웹앱 / 📝 일반)을 고를 수 있습니다. 주차별 제목·설명·마감을 정하고, <b>잠금</b>을 켜면 학생이 더 이상 제출·수정할 수 없습니다.</span></div>'+
    '<div class="wkcards">'+ws.map(function(w){
-     return '<div class="card wkcard" data-wk="'+w.week+'"><div class="row" style="margin-bottom:8px"><b style="font-size:16px">'+w.week+'주차</b><span class="chip c-none">제출 '+subCount(w.week)+'/'+(AD.teams||[]).length+'</span>'+(w.locked?'<span class="chip c-warn">🔒 잠김</span>':'')+'</div>'+
+     return '<div class="card wkcard" data-wk="'+w.week+'"><div class="row" style="margin-bottom:8px"><b style="font-size:16px">'+w.week+'주차</b><span class="chip c-none">제출 '+subCount(w.week)+'/'+(AD.teams||[]).length+'</span>'+(w.kind!=='general'?'<span class="chip c-sub">🌐 웹앱</span>':'<span class="chip c-none">📝 일반</span>')+(w.locked?'<span class="chip c-warn">🔒 잠김</span>':'')+'</div>'+
+      '<label class="f">제출 형식<select class="in" data-f="kind"><option value="webapp"'+(w.kind!=='general'?' selected':'')+'>🌐 웹앱 과제 — 배포 주소(필수)·GitHub 주소·HTML 파일</option><option value="general"'+(w.kind==='general'?' selected':'')+'>📝 일반 과제 — 글·링크·파일</option></select></label>'+
       '<label class="f">제목<input class="in" data-f="title" maxlength="120" value="'+esc(w.title)+'"></label>'+
       '<label class="f">설명 · 과제 안내<textarea class="in" data-f="description" rows="3">'+esc(w.description)+'</textarea></label>'+
       '<div class="row2"><label class="f" style="margin:0">마감 일시<input class="in" type="datetime-local" data-f="due" value="'+esc(toLocalInput(w.due_at))+'"></label>'+
@@ -690,7 +738,7 @@ function renderWeeks(){
   $$('.wkcard').forEach(function(c){
     var wk=+c.dataset.wk,g=function(f){return c.querySelector('[data-f="'+f+'"]')};
     c.querySelector('[data-save]').onclick=function(){
-      api('fb_admin_save_week',{p_week:wk,p_title:g('title').value.trim(),p_description:g('description').value.trim(),p_due:fromLocalInput(g('due').value),p_locked:g('locked').checked})
+      api('fb_admin_save_week',{p_week:wk,p_title:g('title').value.trim(),p_description:g('description').value.trim(),p_due:fromLocalInput(g('due').value),p_locked:g('locked').checked,p_kind:g('kind').value})
        .then(function(){toast(wk+'주차를 저장했습니다.');return loadAdmin()}).catch(function(e){toast(errMsg(e),true)});
     };
   });
@@ -795,9 +843,9 @@ function renderSettings(){
   };
   $('#expAll').onclick=function(){
     api('fb_admin_export').then(function(list){
-      var rows=[['반','조','질환','주차','주차 제목','마감','결과물 제목','내용','링크','첨부 수','마지막 저장자','처음 제출','마지막 저장','저장 횟수','마감 후 제출','상태','점수','피드백','피드백 일시','학생 확인']];
+      var rows=[['반','조','질환','주차','주차 제목','마감','제출 형식','웹앱 주소','GitHub','결과물 제목','내용','링크','첨부 수','마지막 저장자','처음 제출','마지막 저장','저장 횟수','마감 후 제출','상태','점수','피드백','피드백 일시','학생 확인']];
       list.forEach(function(r){var late=r.submitted_at&&r.due_at&&new Date(r.submitted_at)>new Date(r.due_at);
-        rows.push([r['class']+'반',r.team,r.disease,r.week,r.week_title,dt(r.due_at),r.title,r.content,(r.links||[]).join(' \n'),r.nfiles,r.submitted_by,dt(r.submitted_at),dt(r.updated_at),r.revision,late?'예':'',r.status==='revise'?'보완 요청':(r.status==='done'?'완료':''),r.score,r.comment,dt(r.feedback_at),r.read_at?'확인':''])});
+        rows.push([r['class']+'반',r.team,r.disease,r.week,r.week_title,dt(r.due_at),r.kind==='general'?'일반':'웹앱',r.app_url,r.repo_url,r.title,r.content,(r.links||[]).join(' \n'),r.nfiles,r.submitted_by,dt(r.submitted_at),dt(r.updated_at),r.revision,late?'예':'',r.status==='revise'?'보완 요청':(r.status==='done'?'완료':''),r.score,r.comment,dt(r.feedback_at),r.read_at?'확인':''])});
       downloadCSV(rows,'AIDX_제출_피드백_'+new Date().toISOString().slice(0,10)+'.csv');
     }).catch(function(e){toast(errMsg(e),true)});
   };
