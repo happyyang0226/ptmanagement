@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pt-exam-backup.schema.json",
+  "title": "물리치료 환자관리 기록지 백업 (PT_Exam_patient_backup.json)",
+  "description": "웹앱의 '내보내기'로 저장되고 '기록 가져오기 (JSON)'로 불러오는 파일의 구조입니다. ver119(검진·평가·진단)와 ver131(예후·치료계획·중재·결과 추가)이 같은 구조를 쓰므로 이전 백업을 그대로 불러올 수 있습니다. 브라우저 저장소 키: pt_clean_v50.",
+  "type": "object",
+  "required": ["patients", "records"],
+  "properties": {
+    "patients": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": { "$ref": "#/$defs/patient" }
+    },
+    "records": {
+      "type": "object",
+      "description": "환자 id를 키로 하는 환자별 기록 묶음",
+      "additionalProperties": { "$ref": "#/$defs/record" }
+    }
+  },
+  "$defs": {
+    "patient": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 180, "description": "환자 고유 번호 (예: Pmvgq9xxt1cya)" },
+        "name": { "type": "string", "description": "이름" },
+        "regNo": { "type": "string", "description": "등록번호 (예: PT-0001, DEMO-123456)" },
+        "sex": { "enum": ["male", "female"] },
+        "age": { "type": ["number", "string"] },
+        "side": { "enum": ["우", "좌", "양측"], "description": "환측" },
+        "dx": { "type": "string", "description": "의뢰 진단명 — 검사 프로필(어깨·목·허리·무릎·발목·엉덩관절·손목)을 자동 선택하는 기준" },
+        "demo": { "type": "boolean", "description": "랜덤 예시 환자 여부" }
+      }
+    },
+    "record": {
+      "type": "object",
+      "description": "한 환자의 모든 입력값. 값은 대부분 문자열이며, 키 이름의 앞부분(접두어)으로 단계가 구분됩니다.",
+      "properties": {
+        "rgnOverride": { "type": "string", "description": "검사 프로필 직접 선택 (auto, shoulder, neck, back, knee, ankle, hip, hand)" },
+        "problem": { "type": "string", "description": "[2. 평가] 문제목록 (줄마다 '1. …')" },
+        "clinicalSignificance": { "type": "string", "description": "[2. 평가] 문제별 임상적 의미" },
+        "assessment": { "type": "string", "description": "[2. 평가] 종합 평가" },
+        "stage": { "type": "string", "description": "[2. 평가] 경과 단계 (오십견 1~3기 또는 급성·아급성·만성)" },
+        "irritability": { "type": "string", "description": "[2. 평가] 과민성 (높음·중간·낮음)" },
+        "ptDiagnosis": { "type": "string", "description": "[3. 진단] 물리치료적 진단" },
+        "ixs": { "type": "object", "description": "[5. 중재] 질환 전체 자동 논문 검색 결과 (key, status, source, at, items[])" },
+        "ixp": { "type": "object", "description": "[5. 중재] 문제목록별 자동 논문 검색 결과 (문제 번호 → {key, status, items[]})" }
+      },
+      "patternProperties": {
+        "^(cc|duration|onset|course|opqrst[OPQRST]|risk|surgery|meds|prevTx|imaging|yellowFlags|patientGoal|nrs(Rest|Move|Night|Worst))$": { "description": "[1. 검진] 병력청취 · 통증" },
+        "^(ros_|rf|apta|palp|len|sbp|dbp|hr|rr|temp|spo2)": { "description": "[1. 검진] 체계적 고찰 · Red flag · 촉진 · 연부조직" },
+        "^(post|rom_|end_|joint|scapRhythm|mmt_|sens|refl|sls|tug|gait|romberg|spadi|qdash|psfs|sp_|special)": { "description": "[1. 검진] 어깨 프로필 검사·측정 값" },
+        "^rgh_": { "description": "[1. 검진] 질환별 추가 병력 질문" },
+        "^rgr_": { "description": "[1. 검진] 질환별 위험 신호 (예/아니오)" },
+        "^rgp_": { "description": "[1. 검진] 질환별 자세·부종 값" },
+        "^rgn_rom_": { "description": "[1. 검진] 질환별 ROM (rgn_rom_{동작}_a, _a{r|l}, _p{r|l}, _sym)" },
+        "^rgn_end_": { "description": "[1. 검진] 질환별 끝느낌" },
+        "^rgn_mmt_": { "description": "[1. 검진] 질환별 근력 등급 (rgn_mmt_{분절}_{r|l})" },
+        "^rgm_": { "description": "[1. 검진] 질환별 추가 측정 (CCFT, 쥠힘, 지구력 등)" },
+        "^rgn_sens_": { "description": "[1. 검진] 질환별 감각 (rgn_sens_{lt|pp}_{분절}_{r|l})" },
+        "^rgn_refl_": { "description": "[1. 검진] 질환별 반사" },
+        "^rgn_sp_": { "description": "[1. 검진] 질환별 특수검사 결과·메모" },
+        "^rgn_fx_": { "description": "[1. 검진] 기능 척도 문항 (NDI·ODI·LEFS·QuickDASH)" },
+        "^rgn_psfs_": { "description": "[1. 검진] PSFS 활동·점수" },
+        "^cpg_": { "description": "[4. 예후] 회복 수준·기간·근거·촉진/제한 요인·조건과 한계" },
+        "^cp_p\\d+_(ltg|stg)(_[ABCDE])?$": { "description": "[4. 치료계획] 문제별 장기·단기목표 문장과 ABCDE 요소" },
+        "^cp_p\\d+_ix$": { "description": "[4. 치료계획] 문제별 구체적 중재" },
+        "^cp_(freq|duration|home|reeval|modify|discharge|followup)$": { "description": "[4. 치료계획] 빈도·기간·가정운동·재평가·수정 기준·종료·추적관리" },
+        "^ix_": { "description": "[5. 중재] 검색어·정리된 근거 카드 선택(ix_sel_*)·용량·대상 문제" },
+        "^ixs_term$|^ixp_term_\\d+$": { "description": "[5. 중재] 영문 검색어 직접 입력" },
+        "^ixu_": { "description": "[5. 중재] 내가 찾은 논문 기록 (제목·근거수준·목적·배경·대상·기간·변수·FITT·통계·결과·결론)" },
+        "^oc_d_": { "description": "[6. 결과] 초기·2주·6주 평가일" },
+        "^oc_[A-Za-z0-9_]+_(i|w2|w6|g)$": { "description": "[6. 결과] 지표별 초기·2주·6주·목표값" },
+        "^oc_gl_\\d+_[sl]_(ind|tgt|at|ov)$": { "description": "[6. 결과] 단기(s)·장기(l)목표의 연결 지표·목표값·판정 시점·판정" },
+        "^oc_(decision|interp|cn|avg_w2|avg_w6|goal_stg|goal_ltg)$": { "description": "[6. 결과] 결정·해석·요약값" }
+      },
+      "additionalProperties": true
+    }
+  }
+}
